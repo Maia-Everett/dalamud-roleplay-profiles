@@ -1,13 +1,13 @@
 {
-  "Author": "your name here",
-  "Name": "Sample Plugin",
+  "Author": "Vielle Janlenoux",
+  "Name": "RPP - Roleplay Profiles",
   "Punchline": "A short one-liner that shows up in /xlplugins.",
   "Description": "A description that shows up in /xlplugins. List any major slash-command(s).",
-  "InternalName": "samplePlugin",
+  "InternalName": "roleplayProfiles",
   "ApplicableVersion": "any",
   "Tags": [
-    "sample",
-    "plugin",
-    "goats"
+    "roleplay",
+    "rp",
+    "tooltip"
   ]
 }
