@@ -12,12 +12,15 @@ using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Data;
 using Lumina.Excel.GeneratedSheets;
+using System.Runtime.CompilerServices;
 
 namespace RoleplayProfiles
 {
     public sealed class Plugin : IDalamudPlugin
     {
         public string Name => "Roleplay Profiles";
+
+        private readonly ConditionalWeakTable<PlayerCharacter, Player> playerCache = new();
 
         private readonly TargetManager targetManager;
         private readonly DataManager dataManager;
@@ -54,6 +57,7 @@ namespace RoleplayProfiles
         public void Dispose()
         {
             windowSystem.RemoveAllWindows();
+            playerCache.Clear();
         }
 
         private void DrawUI()
@@ -103,9 +107,18 @@ namespace RoleplayProfiles
 
         private Player ToPlayer(PlayerCharacter character)
         {
+            playerCache.TryGetValue(character, out Player? player);
+
+            if (player != null)
+            {
+                return player;
+            }
+
             var name = character.Name.ToString();
             var server = dataManager.GetExcelSheet<World>()!.GetRow(character.HomeWorld.Id)!.Name;
-            return new Player(name, server);
+            var newPlayer = new Player(name, server);
+            playerCache.Add(character, newPlayer);
+            return newPlayer;
         }
     }
 }
