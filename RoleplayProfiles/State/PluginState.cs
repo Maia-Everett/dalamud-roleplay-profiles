@@ -10,6 +10,9 @@ namespace RoleplayProfiles.State
     {
         public Configuration Configuration { get; init; }
 
+        public Player? TargetPlayer { get; set; } = null;
+        public bool TargetPlayerSelected { get; set; } = false;
+
         public PluginState(Configuration configuration)
         {
             this.Configuration = configuration;
