@@ -12,26 +12,23 @@ namespace SamplePlugin
     public sealed class Plugin : IDalamudPlugin
     {
         public string Name => "Roleplay Profiles";
-        private const string CommandName = "/rpp";
 
-        public Configuration Configuration { get; init; }
-        public WindowSystem WindowSystem = new("RoleplayProfiles");
-
-        private TooltipWindow tooltipWindow;
-        private ConfigWindow configWindow;
+        private readonly WindowSystem windowSystem = new("RoleplayProfiles");
+        private readonly TooltipWindow tooltipWindow;
+        private readonly ConfigWindow configWindow;
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
             [RequiredVersion("1.0")] TargetManager targetManager)
         {
-            this.Configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-            this.Configuration.Initialize(pluginInterface);
+            var configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+            configuration.Initialize(pluginInterface);
 
             configWindow = new ConfigWindow(this);
-            WindowSystem.AddWindow(configWindow);
+            windowSystem.AddWindow(configWindow);
 
             tooltipWindow = new TooltipWindow(this);
-            WindowSystem.AddWindow(tooltipWindow);
+            windowSystem.AddWindow(tooltipWindow);
 
             pluginInterface.UiBuilder.Draw += DrawUI;
             pluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
@@ -39,12 +36,12 @@ namespace SamplePlugin
 
         public void Dispose()
         {
-            this.WindowSystem.RemoveAllWindows();
+            windowSystem.RemoveAllWindows();
         }
 
         private void DrawUI()
         {
-            this.WindowSystem.Draw();
+            windowSystem.Draw();
         }
 
         public void DrawConfigUI()
