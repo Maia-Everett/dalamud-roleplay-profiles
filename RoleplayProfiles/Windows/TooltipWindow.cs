@@ -1,5 +1,6 @@
 using System;
 using System.Numerics;
+using Dalamud.Interface;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 using ImGuiScene;
@@ -39,7 +40,76 @@ public class TooltipWindow : Window, IDisposable
             return;
         }
 
-        this.WindowName = "At first glance: " + targetPlayer + "###Roleplay Profile First Glance";
-        ImGui.Text("Yep, this is a roleplayer");
+        this.WindowName = $"At first glance: {targetPlayer.Name}###Roleplay Profile First Glance";
+
+        // Render window
+
+        var cacheEntry = pluginState.GetProfile(targetPlayer);
+        var nameScale = 1.4f;
+
+        switch (cacheEntry.State)
+        {
+            case CacheEntryState.Pending:
+                ImGui.SetWindowFontScale(nameScale);
+                ImGui.Text(targetPlayer.Name);
+                ImGui.SetWindowFontScale(1);
+                ImGui.Spacing();
+
+                ImGui.PushStyleColor(ImGuiCol.Text, ToImGuiColor(0x5ae0b9));
+                ImGui.Text("Retrieving profile...");
+                ImGui.PopStyleColor();
+                break;
+            case CacheEntryState.NotFound:
+                ImGui.SetWindowFontScale(nameScale);
+                ImGui.Text(targetPlayer.Name);
+                ImGui.SetWindowFontScale(1);
+                ImGui.Spacing();
+
+                ImGui.PushStyleColor(ImGuiCol.Text, ToImGuiColor(0xffc8ed));
+                ImGui.Text("Profile not found");
+                ImGui.PopStyleColor();
+                break;
+            case CacheEntryState.Retrieved:
+                ImGui.BeginChild("ScrollRegion", ImGuiHelpers.ScaledVector2(0, -32));
+
+                var profile = cacheEntry.Data!;
+                var name = profile.Title != "" ? $"{profile.Title} {targetPlayer.Name}" : targetPlayer.Name;
+
+                ImGui.SetWindowFontScale(nameScale);
+                ImGui.Text(targetPlayer.Name);
+                ImGui.SetWindowFontScale(1);
+                ImGui.Spacing();
+
+                if (profile.Nickname != "")
+                {
+                    ImGui.Text($"\"{profile.Nickname}\"");
+                }
+
+                if (profile.Occupation != "")
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Text, ToImGuiColor(0xff9d20));
+                    ImGui.Text($"< {profile.Occupation} >");
+                    ImGui.PopStyleColor();
+                }
+
+                ImGui.EndChild();
+                ImGuiHelpers.ScaledDummy(ImGuiHelpers.ScaledVector2(0, 2));
+
+                if (pluginState.TargetPlayerSelected)
+                {
+                    var buttonText = "Full profile";
+                    var buttonSize = ImGuiHelpers.GetButtonSize(buttonText);
+                    ImGui.Text(" ");
+                    ImGui.SameLine(ImGui.GetWindowWidth() - buttonSize.X - ImGuiHelpers.ScaledVector2(8, 0).X);
+                    ImGui.Button(buttonText);
+                }
+                
+                break;
+        }
+    }
+
+    private static uint ToImGuiColor(uint rgb)
+    {
+        return (rgb & 0xff) << 16 | (rgb & 0xff00) | (rgb & 0xff0000) >> 16 | 0xff000000;
     }
 }

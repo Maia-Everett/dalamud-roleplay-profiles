@@ -54,6 +54,7 @@ namespace RoleplayProfiles
         {
             windowSystem.RemoveAllWindows();
             playerCache.Clear();
+            pluginState.Dispose();
         }
 
         private void DrawUI()

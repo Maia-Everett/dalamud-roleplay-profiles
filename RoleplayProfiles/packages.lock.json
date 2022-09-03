@@ -7,6 +7,12 @@
         "requested": "[2.1.8, )",
         "resolved": "2.1.8",
         "contentHash": "YqagNXs9InxmqkXzq7kLveImxnodkBEicAhydMXVp7dFjC7xb76U6zGgAax4/BWIWfZeWzr5DJyQSev31kj81A=="
+      },
+      "RestSharp": {
+        "type": "Direct",
+        "requested": "[108.0.1, )",
+        "resolved": "108.0.1",
+        "contentHash": "XKwuwWq7A4dxZ8l9QkS2+ePLJ9ImmLaJSeFO6H2kpII4Us4n1NRs4w3c//8H2BYpL1XqBE8nmsd9aNCVBwXmOA=="
       }
     }
   }
