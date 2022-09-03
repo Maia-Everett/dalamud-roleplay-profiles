@@ -9,6 +9,9 @@ using Dalamud.Game.ClientState.Objects;
 using RoleplayProfiles.State;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Game.ClientState.Objects.SubKinds;
+using Dalamud.Data;
+using Lumina.Excel.GeneratedSheets;
 
 namespace RoleplayProfiles
 {
@@ -17,6 +20,7 @@ namespace RoleplayProfiles
         public string Name => "Roleplay Profiles";
 
         private readonly TargetManager targetManager;
+        private readonly DataManager dataManager;
 
         private readonly PluginState pluginState;
 
@@ -26,9 +30,11 @@ namespace RoleplayProfiles
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
-            [RequiredVersion("1.0")] TargetManager targetManager)
+            [RequiredVersion("1.0")] TargetManager targetManager,
+            [RequiredVersion("1.0")] DataManager dataManager)
         {
             this.targetManager = targetManager;
+            this.dataManager = dataManager;
 
             var configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             configuration.Initialize(pluginInterface);
@@ -57,7 +63,7 @@ namespace RoleplayProfiles
             if (IsRoleplayer(target))
             {
                 pluginState.TargetPlayerSelected = target == targetManager.Target;
-                pluginState.TargetPlayer = new Player(target!.Name.ToString(), "Omega");
+                pluginState.TargetPlayer = ToPlayer((PlayerCharacter) target!);
             }
             else
             {
@@ -66,7 +72,7 @@ namespace RoleplayProfiles
                 if (IsRoleplayer(target))
                 {
                     pluginState.TargetPlayerSelected = true;
-                    pluginState.TargetPlayer = new Player(target!.Name.ToString(), "Omega");
+                    pluginState.TargetPlayer = ToPlayer((PlayerCharacter) target!);
                 }
                 else
                 {
@@ -87,12 +93,19 @@ namespace RoleplayProfiles
 
         private static bool IsRoleplayer(GameObject? target)
         {
-            if (target is Character character)
+            if (target is PlayerCharacter character)
             {
                 return character.OnlineStatus.Id == 22;
             }
 
             return false;
+        }
+
+        private Player ToPlayer(PlayerCharacter character)
+        {
+            var name = character.Name.ToString();
+            var server = dataManager.GetExcelSheet<World>()!.GetRow(character.HomeWorld.Id)!.Name;
+            return new Player(name, server);
         }
     }
 }
