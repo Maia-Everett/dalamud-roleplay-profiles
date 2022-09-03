@@ -6,13 +6,13 @@ using ImGuiScene;
 
 namespace SamplePlugin.Windows;
 
-public class MainWindow : Window, IDisposable
+public class TooltipWindow : Window, IDisposable
 {
     public static readonly string Title = "Roleplay Profile";
 
     private Plugin plugin;
 
-    public MainWindow(Plugin plugin) : base(Title)
+    public TooltipWindow(Plugin plugin) : base(Title)
     {
         this.SizeConstraints = new WindowSizeConstraints
         {

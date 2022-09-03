@@ -18,7 +18,7 @@ namespace SamplePlugin
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("RoleplayProfiles");
 
-        private MainWindow mainWindow;
+        private TooltipWindow tooltipWindow;
         private ConfigWindow configWindow;
 
         public Plugin(
@@ -34,8 +34,8 @@ namespace SamplePlugin
             configWindow = new ConfigWindow(this);
             WindowSystem.AddWindow(configWindow);
 
-            mainWindow = new MainWindow(this);
-            WindowSystem.AddWindow(mainWindow);
+            tooltipWindow = new TooltipWindow(this);
+            WindowSystem.AddWindow(tooltipWindow);
 
             this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
             {
@@ -54,7 +54,7 @@ namespace SamplePlugin
 
         private void OnCommand(string command, string args)
         {
-            mainWindow.IsOpen = true;
+            tooltipWindow.IsOpen = true;
         }
 
         private void DrawUI()
