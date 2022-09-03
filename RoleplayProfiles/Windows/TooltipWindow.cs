@@ -3,16 +3,17 @@ using System.Numerics;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 using ImGuiScene;
+using RoleplayProfiles.State;
 
-namespace SamplePlugin.Windows;
+namespace RoleplayProfiles.Windows;
 
 public class TooltipWindow : Window, IDisposable
 {
     public static readonly string Title = "Roleplay Profile";
 
-    private Plugin plugin;
+    private PluginState pluginState;
 
-    public TooltipWindow(Plugin plugin) : base(Title)
+    public TooltipWindow(PluginState pluginState) : base(Title)
     {
         this.SizeConstraints = new WindowSizeConstraints
         {
@@ -20,7 +21,7 @@ public class TooltipWindow : Window, IDisposable
             MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
         };
 
-        this.plugin = plugin;
+        this.pluginState = pluginState;
     }
 
     public void Dispose()
@@ -30,14 +31,6 @@ public class TooltipWindow : Window, IDisposable
 
     public override void Draw()
     {
-        ImGui.Text($"The random config bool is {this.plugin.Configuration.SomePropertyToBeSavedAndWithADefault}");
-
-        if (ImGui.Button("Show Settings"))
-        {
-            this.plugin.DrawConfigUI();
-        }
-
-        ImGui.Spacing();
-
+        ImGui.Text("Yep, this is a roleplayer");
     }
 }

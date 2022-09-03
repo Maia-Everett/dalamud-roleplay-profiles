@@ -4,15 +4,17 @@ using Dalamud.Plugin;
 using System.IO;
 using System.Reflection;
 using Dalamud.Interface.Windowing;
-using SamplePlugin.Windows;
+using RoleplayProfiles.Windows;
 using Dalamud.Game.ClientState.Objects;
+using RoleplayProfiles.State;
 
-namespace SamplePlugin
+namespace RoleplayProfiles
 {
     public sealed class Plugin : IDalamudPlugin
     {
         public string Name => "Roleplay Profiles";
 
+        private readonly PluginState pluginState;
         private readonly WindowSystem windowSystem = new("RoleplayProfiles");
         private readonly TooltipWindow tooltipWindow;
         private readonly ConfigWindow configWindow;
@@ -24,10 +26,13 @@ namespace SamplePlugin
             var configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             configuration.Initialize(pluginInterface);
 
-            configWindow = new ConfigWindow(this);
+            pluginState = new PluginState(configuration);
+
+            configWindow = new ConfigWindow(pluginState);
             windowSystem.AddWindow(configWindow);
 
-            tooltipWindow = new TooltipWindow(this);
+            tooltipWindow = new TooltipWindow(pluginState);
+            tooltipWindow.IsOpen = true;
             windowSystem.AddWindow(tooltipWindow);
 
             pluginInterface.UiBuilder.Draw += DrawUI;
