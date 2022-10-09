@@ -47,7 +47,7 @@ namespace RoleplayProfiles
             profileWindow = new ProfileWindow(pluginState);
             windowSystem.AddWindow(profileWindow);
 
-            tooltipWindow = new TooltipWindow(pluginState, profileWindow);
+            tooltipWindow = new TooltipWindow(pluginState, profileWindow, configWindow);
             windowSystem.AddWindow(tooltipWindow);
 
             pluginInterface.UiBuilder.Draw += DrawUI;

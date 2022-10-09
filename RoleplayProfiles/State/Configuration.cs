@@ -8,6 +8,8 @@ namespace RoleplayProfiles.State
     public class Configuration : IPluginConfiguration
     {
         public int Version { get; set; } = 0;
+        public string? UserEmail { get; set; } = null;
+        public string? AccessToken { get; set; } = null;
 
         // the below exist just to make saving less cumbersome
         [NonSerialized]

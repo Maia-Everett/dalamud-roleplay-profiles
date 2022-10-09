@@ -14,8 +14,9 @@ public class TooltipWindow : Window, IDisposable
 
     private PluginState pluginState;
     private ProfileWindow profileWindow;
+    private ConfigWindow configWindow;
 
-    public TooltipWindow(PluginState pluginState, ProfileWindow profileWindow) : base(DefaultTitle)
+    public TooltipWindow(PluginState pluginState, ProfileWindow profileWindow, ConfigWindow configWindow) : base(DefaultTitle)
     {
         this.SizeConstraints = new WindowSizeConstraints
         {
@@ -25,6 +26,7 @@ public class TooltipWindow : Window, IDisposable
 
         this.pluginState = pluginState;
         this.profileWindow = profileWindow;
+        this.configWindow = configWindow;
     }
 
     public void Dispose()
@@ -112,6 +114,16 @@ public class TooltipWindow : Window, IDisposable
 
                 ImGui.EndChild();
                 ImGuiHelpers.ScaledDummy(ImGuiHelpers.ScaledVector2(0, 2));
+
+                if (pluginState.Configuration.AccessToken == null)
+                {
+                    if (ImGui.Button("Log in to Chaos Archives"))
+                    {
+                        configWindow.IsOpen = true;
+                    }
+
+                    ImGui.SameLine();
+                }
 
                 if (pluginState.TargetPlayerSelected)
                 {
