@@ -82,13 +82,13 @@ public class TooltipWindow : Window, IDisposable
 
                 if (profile.Nickname != "")
                 {
-                    ImGui.Text($"\"{profile.Nickname}\"");
+                    ImGui.TextWrapped($"\"{profile.Nickname}\"");
                 }
 
                 if (profile.Occupation != "")
                 {
                     ImGui.PushStyleColor(ImGuiCol.Text, ToImGuiColor(0xff9d20));
-                    ImGui.Text($"< {profile.Occupation} >");
+                    ImGui.TextWrapped($"< {profile.Occupation} >");
                     ImGui.PopStyleColor();
                 }
 
