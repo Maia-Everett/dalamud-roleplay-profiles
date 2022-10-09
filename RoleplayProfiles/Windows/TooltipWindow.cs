@@ -112,6 +112,15 @@ public class TooltipWindow : Window, IDisposable
                     ImGui.TextWrapped(profile.Currently);
                 }
 
+                if (profile.OocInfo != "")
+                {
+                    ImGui.Spacing();
+                    ImGui.SetWindowFontScale(1.2f);
+                    ImGui.Text("OOC Info");
+                    ImGui.SetWindowFontScale(1);
+                    ImGui.TextWrapped(profile.OocInfo);
+                }
+
                 ImGui.EndChild();
                 ImGuiHelpers.ScaledDummy(ImGuiHelpers.ScaledVector2(0, 2));
 

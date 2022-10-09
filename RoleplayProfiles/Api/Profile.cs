@@ -17,6 +17,8 @@ namespace RoleplayProfiles.Api
         public string Nickname { get; set; } = "";
         public string Occupation { get; set; } = "";
         public string Currently { get; set; } = "";
+        public string OocInfo { get; set; } = "";
+        public string Pronouns { get; set; } = "";
 
         public string Appearance { get; set; } = "";
         public string Background { get; set; } = "";
@@ -24,7 +26,6 @@ namespace RoleplayProfiles.Api
         public string Age { get; set; } = "";
         public string Birthplace { get; set; } = "";
         public string Residence { get; set; } = "";
-        public string Pronouns { get; set; } = "";
         public string Friends { get; set; } = "";
         public string Relatives { get; set; } = "";
         public string Enemies { get; set; } = "";
