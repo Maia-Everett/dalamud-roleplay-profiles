@@ -1,8 +1,8 @@
 {
   "Author": "Vielle Janlenoux",
   "Name": "RPP - Roleplay Profiles",
-  "Punchline": "A short one-liner that shows up in /xlplugins.",
-  "Description": "A description that shows up in /xlplugins. List any major slash-command(s).",
+  "Punchline": "Display profiles from Chaos Archives (Europe region) in-game",
+  "Description": "A plugin for Europe region roleplayers, displaying profiles from Chaos Archives (chaosarchives.org) for characters with the RP flag on.",
   "InternalName": "roleplayProfiles",
   "ApplicableVersion": "any",
   "Tags": [
