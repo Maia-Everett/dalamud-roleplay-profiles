@@ -57,7 +57,7 @@ public class TooltipWindow : Window, IDisposable
                 ImGui.SetWindowFontScale(1);
                 ImGui.Spacing();
 
-                ImGui.PushStyleColor(ImGuiCol.Text, ToImGuiColor(0x5ae0b9));
+                ImGui.PushStyleColor(ImGuiCol.Text, WindowUtils.ToImGuiColor(0x5ae0b9));
                 ImGui.Text("Retrieving profile...");
                 ImGui.PopStyleColor();
                 break;
@@ -67,7 +67,7 @@ public class TooltipWindow : Window, IDisposable
                 ImGui.SetWindowFontScale(1);
                 ImGui.Spacing();
 
-                ImGui.PushStyleColor(ImGuiCol.Text, ToImGuiColor(0xffc8ed));
+                ImGui.PushStyleColor(ImGuiCol.Text, WindowUtils.ToImGuiColor(0xffc8ed));
                 ImGui.Text("Profile not found");
                 ImGui.PopStyleColor();
                 break;
@@ -89,9 +89,25 @@ public class TooltipWindow : Window, IDisposable
 
                 if (profile.Occupation != "")
                 {
-                    ImGui.PushStyleColor(ImGuiCol.Text, ToImGuiColor(0xff9d20));
+                    ImGui.PushStyleColor(ImGuiCol.Text, WindowUtils.ToImGuiColor(0xff9d20));
                     ImGui.TextWrapped($"< {profile.Occupation} >");
                     ImGui.PopStyleColor();
+                }
+
+                if (profile.Pronouns != "")
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Text, WindowUtils.ToImGuiColor(0x7e7e7e));
+                    ImGui.TextWrapped($"Pronouns: {profile.Pronouns}");
+                    ImGui.PopStyleColor();
+                }
+
+                if (profile.Currently != "")
+                {
+                    ImGui.Spacing();
+                    ImGui.SetWindowFontScale(1.2f);
+                    ImGui.Text("Currently");
+                    ImGui.SetWindowFontScale(1);
+                    ImGui.TextWrapped(profile.Currently);
                 }
 
                 ImGui.EndChild();
@@ -106,16 +122,12 @@ public class TooltipWindow : Window, IDisposable
                     
                     if (ImGui.Button(buttonText))
                     {
+                        pluginState.ProfilePlayer = targetPlayer;
                         profileWindow.IsOpen = true;
                     }
                 }
                 
                 break;
         }
-    }
-
-    private static uint ToImGuiColor(uint rgb)
-    {
-        return (rgb & 0xff) << 16 | (rgb & 0xff00) | (rgb & 0xff0000) >> 16 | 0xff000000;
     }
 }
