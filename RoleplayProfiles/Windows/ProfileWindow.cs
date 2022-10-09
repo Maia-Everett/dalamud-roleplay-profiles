@@ -65,7 +65,7 @@ public class ProfileWindow : Window, IDisposable
         ShowField(profile.Birthplace, "Birthplace");
         ShowField(profile.Age, "Age");
         ShowField(profile.Residence, "Residence");
-        ShowField(profile.Pronouns, "Race");
+        ShowField(profile.Pronouns, "Pronouns");
 
         ImGui.Separator();
 
@@ -81,10 +81,10 @@ public class ProfileWindow : Window, IDisposable
         ImGui.Separator();
         ImGui.Spacing();
 
-        ImGui.BeginTabBar("ProfileTabs");
-
         if (!string.IsNullOrEmpty(profile.Background))
         {
+            ImGui.BeginTabBar("ProfileTabs");
+
             if (ImGui.BeginTabItem("Outward Appearance"))
             {
                 ImGui.BeginChild("ScrollRegionAppearance");
