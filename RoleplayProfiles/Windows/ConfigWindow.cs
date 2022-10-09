@@ -1,9 +1,13 @@
 using System;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Numerics;
+using System.Threading.Tasks;
 using Dalamud.Interface;
 using Dalamud.Interface.Windowing;
+using Dalamud.Logging;
 using ImGuiNET;
+using RoleplayProfiles.Api;
 using RoleplayProfiles.State;
 
 namespace RoleplayProfiles.Windows;
@@ -11,18 +15,23 @@ namespace RoleplayProfiles.Windows;
 public class ConfigWindow : Window, IDisposable
 {
     public static readonly string Title = "Roleplay Profiles Configuration";
+    private static readonly Vector4 ErrorColorVec = ImGui.ColorConvertU32ToFloat4(WindowUtils.ToImGuiColor(0xff4c4c));
 
     private Configuration configuration;
+    private ApiClient apiClient;
     private string userEmail;
     private string userPassword = "";
+    private string exceptionMessage = "";
+    private volatile bool loading = false;
 
     public ConfigWindow(PluginState pluginState) : base(
         Title, ImGuiWindowFlags.NoResize)
     {
-        this.Size = ImGuiHelpers.ScaledVector2(232, 100);
+        this.Size = ImGuiHelpers.ScaledVector2(232, 120);
         this.SizeCondition = ImGuiCond.Always;
 
         this.configuration = pluginState.Configuration;
+        this.apiClient = pluginState.ApiClient;
         userEmail = configuration.UserEmail ?? "";
     }
 
@@ -46,22 +55,21 @@ public class ConfigWindow : Window, IDisposable
             ImGui.InputText("###Password", ref userPassword, 255, ImGuiInputTextFlags.Password);
             ImGui.Spacing();
 
-            var disabled = userEmail == "" || userPassword == "";
+            var disabled = userEmail == "" || userPassword == "" || loading;
 
             if (disabled)
             {
                 ImGui.BeginDisabled();
             }
 
-            var loginButtonText = "Log in";
+            var loginButtonText = loading ? "Logging in..." : "Log in";
             var loginButtonSize = ImGuiHelpers.GetButtonSize(loginButtonText);
             ImGui.Text(" ");
             ImGui.SameLine(ImGui.GetWindowWidth() - loginButtonSize.X - ImGuiHelpers.ScaledVector2(8, 0).X);
 
             if (ImGui.Button(loginButtonText))
             {
-                configuration.UserEmail = userEmail;
-                configuration.AccessToken = "test";
+                _ = Login();
             }
             
             if (disabled)
@@ -69,6 +77,7 @@ public class ConfigWindow : Window, IDisposable
                 ImGui.EndDisabled();
             }
 
+            ImGui.TextColored(ErrorColorVec, exceptionMessage);
             ImGui.Spacing();
             ImGui.Separator();
             ImGui.Spacing();
@@ -97,6 +106,41 @@ public class ConfigWindow : Window, IDisposable
                 configuration.UserEmail = null;
                 configuration.AccessToken = null;
             }
+        }
+    }
+
+    private async Task Login()
+    {
+        loading = true;
+
+        try
+        {
+            var email = userEmail;
+            var response = await apiClient.Login(userEmail, userPassword);
+            configuration.AccessToken = response.AccessToken;
+            configuration.UserEmail = email;
+        }
+        catch (HttpRequestException e)
+        {
+            PluginLog.Information("Error logging in: " + e.Message);
+
+            if (e.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                exceptionMessage = "Invalid email or password";
+            }
+            else
+            {
+                exceptionMessage = e.Message;
+            }
+        }
+        catch (Exception e)
+        {
+            PluginLog.Information("Error logging in: " + e.Message);
+            exceptionMessage = e.Message;
+        }
+        finally
+        {
+            loading = false;
         }
     }
 }

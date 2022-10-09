@@ -31,5 +31,24 @@ namespace RoleplayProfiles.Api
 
             return response.Data;
         }
+
+        public async Task<LoginResponse> Login(string email, string password)
+        {
+            var request = new RestRequest("/login", Method.Post);
+            request.AddBody(new LoginRequest
+            {
+                Email = email,
+                Password = password,
+            });
+
+            var response = await restClient.ExecuteAsync<LoginResponse>(request);
+
+            if (response.ErrorException != null)
+            {
+                throw response.ErrorException;
+            }
+
+            return response.Data!;
+        }
     }
 }

@@ -12,8 +12,8 @@ namespace RoleplayProfiles.State
     public class PluginState: IDisposable
     {
         private readonly Dictionary<Player, ProfileCacheEntry> profileCache = new();
-        private readonly ApiClient apiClient = new();
 
+        public ApiClient ApiClient { get; init; } = new();
         public Configuration Configuration { get; init; }
 
         public Player? TargetPlayer { get; set; } = null;
@@ -46,7 +46,7 @@ namespace RoleplayProfiles.State
 
             try
             {
-                var profile = await apiClient.GetProfile(player.Name, player.Server);
+                var profile = await ApiClient.GetProfile(player.Name, player.Server);
                 
                 if (profile != null)
                 {
