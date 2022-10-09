@@ -13,8 +13,9 @@ public class TooltipWindow : Window, IDisposable
     private static readonly string DefaultTitle = "At first glance: (no target player)###Roleplay Profile First Glance";
 
     private PluginState pluginState;
+    private ProfileWindow profileWindow;
 
-    public TooltipWindow(PluginState pluginState) : base(DefaultTitle)
+    public TooltipWindow(PluginState pluginState, ProfileWindow profileWindow) : base(DefaultTitle)
     {
         this.SizeConstraints = new WindowSizeConstraints
         {
@@ -23,6 +24,7 @@ public class TooltipWindow : Window, IDisposable
         };
 
         this.pluginState = pluginState;
+        this.profileWindow = profileWindow;
     }
 
     public void Dispose()
@@ -101,7 +103,11 @@ public class TooltipWindow : Window, IDisposable
                     var buttonSize = ImGuiHelpers.GetButtonSize(buttonText);
                     ImGui.Text(" ");
                     ImGui.SameLine(ImGui.GetWindowWidth() - buttonSize.X - ImGuiHelpers.ScaledVector2(8, 0).X);
-                    ImGui.Button(buttonText);
+                    
+                    if (ImGui.Button(buttonText))
+                    {
+                        profileWindow.IsOpen = true;
+                    }
                 }
                 
                 break;

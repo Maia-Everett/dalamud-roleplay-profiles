@@ -25,6 +25,7 @@ namespace RoleplayProfiles
 
         private readonly WindowSystem windowSystem = new("RoleplayProfiles");
         private readonly TooltipWindow tooltipWindow;
+        private readonly ProfileWindow profileWindow;
         private readonly ConfigWindow configWindow;
 
         public Plugin(
@@ -43,7 +44,10 @@ namespace RoleplayProfiles
             configWindow = new ConfigWindow(pluginState);
             windowSystem.AddWindow(configWindow);
 
-            tooltipWindow = new TooltipWindow(pluginState);
+            profileWindow = new ProfileWindow(pluginState);
+            windowSystem.AddWindow(profileWindow);
+
+            tooltipWindow = new TooltipWindow(pluginState, profileWindow);
             windowSystem.AddWindow(tooltipWindow);
 
             pluginInterface.UiBuilder.Draw += DrawUI;
