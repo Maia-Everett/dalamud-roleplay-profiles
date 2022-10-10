@@ -14,6 +14,8 @@ namespace RoleplayProfiles
 {
     public sealed class Plugin : IDalamudPlugin
     {
+        private static readonly uint PlayerStatusRoleplayer = 22;
+
         public string Name => "Roleplay Profiles";
 
         private readonly ConditionalWeakTable<PlayerCharacter, Player> playerCache = new();
@@ -104,7 +106,7 @@ namespace RoleplayProfiles
         {
             if (target is PlayerCharacter character)
             {
-                return character.OnlineStatus.Id == 22;
+                return character.OnlineStatus.Id == PlayerStatusRoleplayer;
             }
 
             return false;
