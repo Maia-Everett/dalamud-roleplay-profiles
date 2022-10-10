@@ -15,8 +15,10 @@ public class TooltipWindow : Window, IDisposable
     private readonly PluginState pluginState;
     private readonly ProfileWindow profileWindow;
     private readonly ConfigWindow configWindow;
+    private readonly EditProfileWindow editProfileWindow;
 
-    public TooltipWindow(PluginState pluginState, ProfileWindow profileWindow, ConfigWindow configWindow) : base(DefaultTitle)
+    public TooltipWindow(PluginState pluginState, ProfileWindow profileWindow, ConfigWindow configWindow,
+        EditProfileWindow editProfileWindow) : base(DefaultTitle)
     {
         this.SizeConstraints = new WindowSizeConstraints
         {
@@ -27,6 +29,7 @@ public class TooltipWindow : Window, IDisposable
         this.pluginState = pluginState;
         this.profileWindow = profileWindow;
         this.configWindow = configWindow;
+        this.editProfileWindow = editProfileWindow;
     }
 
     public void Dispose()
@@ -129,6 +132,15 @@ public class TooltipWindow : Window, IDisposable
                     if (ImGui.Button("Log in to Chaos Archives"))
                     {
                         configWindow.IsOpen = true;
+                    }
+
+                    ImGui.SameLine();
+                }
+                else
+                {
+                    if (ImGui.Button("Edit your profile"))
+                    {
+                        editProfileWindow.IsOpen = true;
                     }
 
                     ImGui.SameLine();

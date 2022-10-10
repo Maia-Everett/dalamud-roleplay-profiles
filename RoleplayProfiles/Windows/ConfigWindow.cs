@@ -16,14 +16,16 @@ public class ConfigWindow : Window, IDisposable
 {
     public static readonly string Title = "Roleplay Profiles Configuration";
 
-    private Configuration configuration;
-    private ApiClient apiClient;
+    private readonly Configuration configuration;
+    private readonly ApiClient apiClient;
+    private readonly EditProfileWindow editProfileWindow;
+
     private string userEmail;
     private string userPassword = "";
     private string exceptionMessage = "";
     private volatile bool loading = false;
 
-    public ConfigWindow(PluginState pluginState) : base(
+    public ConfigWindow(PluginState pluginState, EditProfileWindow editProfileWindow) : base(
         Title, ImGuiWindowFlags.NoResize)
     {
         this.Size = ImGuiHelpers.ScaledVector2(232, 120);
@@ -32,9 +34,14 @@ public class ConfigWindow : Window, IDisposable
         this.configuration = pluginState.Configuration;
         this.apiClient = pluginState.ApiClient;
         userEmail = configuration.UserEmail ?? "";
+
+        this.editProfileWindow = editProfileWindow;
     }
 
-    public void Dispose() { }
+    public void Dispose()
+    {
+        // Do nothing
+    }
 
     public override void Draw()
     {
@@ -104,6 +111,15 @@ public class ConfigWindow : Window, IDisposable
             {
                 configuration.UserEmail = null;
                 configuration.AccessToken = null;
+            }
+
+            ImGui.Spacing();
+            ImGui.Separator();
+            ImGui.Spacing();
+
+            if (ImGui.Button("Edit your profile"))
+            {
+                editProfileWindow.IsOpen = true;
             }
         }
     }

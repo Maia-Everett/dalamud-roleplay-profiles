@@ -27,6 +27,7 @@ namespace RoleplayProfiles
         private readonly TooltipWindow tooltipWindow;
         private readonly ProfileWindow profileWindow;
         private readonly ConfigWindow configWindow;
+        private readonly EditProfileWindow editProfileWindow;
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
@@ -41,13 +42,16 @@ namespace RoleplayProfiles
 
             pluginState = new PluginState(configuration);
 
-            configWindow = new ConfigWindow(pluginState);
+            editProfileWindow = new EditProfileWindow(pluginState);
+            windowSystem.AddWindow(editProfileWindow);
+
+            configWindow = new ConfigWindow(pluginState, editProfileWindow);
             windowSystem.AddWindow(configWindow);
 
             profileWindow = new ProfileWindow(pluginState);
             windowSystem.AddWindow(profileWindow);
 
-            tooltipWindow = new TooltipWindow(pluginState, profileWindow, configWindow);
+            tooltipWindow = new TooltipWindow(pluginState, profileWindow, configWindow, editProfileWindow);
             windowSystem.AddWindow(tooltipWindow);
 
             pluginInterface.UiBuilder.Draw += DrawUI;

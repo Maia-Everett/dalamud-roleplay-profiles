@@ -17,7 +17,7 @@ public class ProfileWindow : Window, IDisposable
 
     private static readonly float LabelWidth = ImGuiHelpers.ScaledVector2(100, 0).X;
 
-    private PluginState pluginState;
+    private readonly PluginState pluginState;
 
     public ProfileWindow(PluginState pluginState) : base(DefaultTitle)
     {
@@ -32,7 +32,7 @@ public class ProfileWindow : Window, IDisposable
 
     public void Dispose()
     {
-        
+        // Do nothing
     }
 
     public override void Draw()
