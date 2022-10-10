@@ -1,9 +1,12 @@
+using Dalamud.Game.ClientState;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Logging;
 using RestSharp;
 using RoleplayProfiles.Api;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +15,7 @@ namespace RoleplayProfiles.State
     public class PluginState: IDisposable
     {
         private readonly Dictionary<Player, ProfileCacheEntry> profileCache = new();
+        private readonly ConditionalWeakTable<PlayerCharacter, Player> playerCache = new();
 
         public ApiClient ApiClient { get; init; } = new();
         public Configuration Configuration { get; init; }
@@ -20,9 +24,12 @@ namespace RoleplayProfiles.State
         public Player? ProfilePlayer { get; set; } = null;
         public bool TargetPlayerSelected { get; set; } = false;
 
-        public PluginState(Configuration configuration)
+        private readonly ClientState clientState;
+
+        public PluginState(Configuration configuration, ClientState clientState)
         {
             this.Configuration = configuration;
+            this.clientState = clientState;
         }
 
         public ProfileCacheEntry GetProfile(Player player)
@@ -68,10 +75,31 @@ namespace RoleplayProfiles.State
                 cacheEntry.Data = null;
             }
         }
+        public Player ToPlayer(PlayerCharacter character)
+        {
+            playerCache.TryGetValue(character, out var player);
+
+            if (player != null)
+            {
+                return player;
+            }
+
+            var name = character.Name.ToString();
+            var server = character.HomeWorld.GameData!.Name;
+            var newPlayer = new Player(name, server);
+            playerCache.Add(character, newPlayer);
+            return newPlayer;
+        }
+
+        public Player GetCurrentPlayer()
+        {
+            return ToPlayer(clientState.LocalPlayer!);
+        }
 
         public void Dispose()
         {
             profileCache.Clear();
+            playerCache.Clear();
         }
     }
 }

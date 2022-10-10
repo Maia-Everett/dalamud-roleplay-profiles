@@ -7,6 +7,7 @@ using RoleplayProfiles.State;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using System.Runtime.CompilerServices;
+using Dalamud.Game.ClientState;
 
 namespace RoleplayProfiles
 {
@@ -16,10 +17,7 @@ namespace RoleplayProfiles
 
         public string Name => "Roleplay Profiles";
 
-        private readonly ConditionalWeakTable<PlayerCharacter, Player> playerCache = new();
-
         private readonly TargetManager targetManager;
-
         private readonly PluginState pluginState;
 
         private readonly WindowSystem windowSystem = new("RoleplayProfiles");
@@ -30,14 +28,15 @@ namespace RoleplayProfiles
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
-            [RequiredVersion("1.0")] TargetManager targetManager)
+            [RequiredVersion("1.0")] TargetManager targetManager,
+            [RequiredVersion("1.0")] ClientState clientState)
         {
             this.targetManager = targetManager;
 
             var configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             configuration.Initialize(pluginInterface);
 
-            pluginState = new PluginState(configuration);
+            pluginState = new PluginState(configuration, clientState);
 
             editProfileWindow = new EditProfileWindow(pluginState);
             windowSystem.AddWindow(editProfileWindow);
@@ -58,7 +57,6 @@ namespace RoleplayProfiles
         public void Dispose()
         {
             windowSystem.RemoveAllWindows();
-            playerCache.Clear();
             pluginState.Dispose();
         }
 
@@ -69,7 +67,7 @@ namespace RoleplayProfiles
             if (IsRoleplayer(target))
             {
                 pluginState.TargetPlayerSelected = target == targetManager.Target;
-                pluginState.TargetPlayer = ToPlayer((PlayerCharacter) target!);
+                pluginState.TargetPlayer = pluginState.ToPlayer((PlayerCharacter) target!);
             }
             else
             {
@@ -78,7 +76,7 @@ namespace RoleplayProfiles
                 if (IsRoleplayer(target))
                 {
                     pluginState.TargetPlayerSelected = true;
-                    pluginState.TargetPlayer = ToPlayer((PlayerCharacter) target!);
+                    pluginState.TargetPlayer = pluginState.ToPlayer((PlayerCharacter) target!);
                 }
                 else
                 {
@@ -105,22 +103,6 @@ namespace RoleplayProfiles
             }
 
             return false;
-        }
-
-        private Player ToPlayer(PlayerCharacter character)
-        {
-            playerCache.TryGetValue(character, out var player);
-
-            if (player != null)
-            {
-                return player;
-            }
-
-            var name = character.Name.ToString();
-            var server = character.HomeWorld.GameData!.Name;
-            var newPlayer = new Player(name, server);
-            playerCache.Add(character, newPlayer);
-            return newPlayer;
         }
     }
 }
