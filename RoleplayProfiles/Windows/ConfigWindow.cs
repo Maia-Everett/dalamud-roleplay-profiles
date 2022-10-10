@@ -115,7 +115,7 @@ public class ConfigWindow : Window, IDisposable
 
             ImGui.Spacing();
             ImGui.Separator();
-            ImGui.Spacing();
+            ImGuiHelpers.ScaledDummy(12);
 
             if (ImGui.Button("Edit your profile"))
             {
