@@ -134,6 +134,7 @@ public class ConfigWindow : Window, IDisposable
             var response = await apiClient.Login(userEmail, userPassword);
             configuration.AccessToken = response.AccessToken;
             configuration.UserEmail = email;
+            configuration.Save();
         }
         catch (HttpRequestException e)
         {

@@ -6,8 +6,6 @@ using Dalamud.Game.ClientState.Objects;
 using RoleplayProfiles.State;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
-using Dalamud.Data;
-using Lumina.Excel.GeneratedSheets;
 using System.Runtime.CompilerServices;
 
 namespace RoleplayProfiles
@@ -21,7 +19,6 @@ namespace RoleplayProfiles
         private readonly ConditionalWeakTable<PlayerCharacter, Player> playerCache = new();
 
         private readonly TargetManager targetManager;
-        private readonly DataManager dataManager;
 
         private readonly PluginState pluginState;
 
@@ -33,11 +30,9 @@ namespace RoleplayProfiles
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
-            [RequiredVersion("1.0")] TargetManager targetManager,
-            [RequiredVersion("1.0")] DataManager dataManager)
+            [RequiredVersion("1.0")] TargetManager targetManager)
         {
             this.targetManager = targetManager;
-            this.dataManager = dataManager;
 
             var configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             configuration.Initialize(pluginInterface);
@@ -114,7 +109,7 @@ namespace RoleplayProfiles
 
         private Player ToPlayer(PlayerCharacter character)
         {
-            playerCache.TryGetValue(character, out Player? player);
+            playerCache.TryGetValue(character, out var player);
 
             if (player != null)
             {
@@ -122,7 +117,7 @@ namespace RoleplayProfiles
             }
 
             var name = character.Name.ToString();
-            var server = dataManager.GetExcelSheet<World>()!.GetRow(character.HomeWorld.Id)!.Name;
+            var server = character.HomeWorld.GameData!.Name;
             var newPlayer = new Player(name, server);
             playerCache.Add(character, newPlayer);
             return newPlayer;
