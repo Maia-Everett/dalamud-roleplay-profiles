@@ -12,9 +12,9 @@ public class TooltipWindow : Window, IDisposable
 {
     private static readonly string DefaultTitle = "At first glance: (no target player)###Roleplay Profile First Glance";
 
-    private PluginState pluginState;
-    private ProfileWindow profileWindow;
-    private ConfigWindow configWindow;
+    private readonly PluginState pluginState;
+    private readonly ProfileWindow profileWindow;
+    private readonly ConfigWindow configWindow;
 
     public TooltipWindow(PluginState pluginState, ProfileWindow profileWindow, ConfigWindow configWindow) : base(DefaultTitle)
     {
@@ -59,7 +59,7 @@ public class TooltipWindow : Window, IDisposable
                 ImGui.SetWindowFontScale(1);
                 ImGui.Spacing();
 
-                ImGui.PushStyleColor(ImGuiCol.Text, WindowUtils.ToImGuiColor(0x5ae0b9));
+                ImGui.PushStyleColor(ImGuiCol.Text, Colors.Loading);
                 ImGui.Text("Retrieving profile...");
                 ImGui.PopStyleColor();
                 break;
@@ -69,7 +69,7 @@ public class TooltipWindow : Window, IDisposable
                 ImGui.SetWindowFontScale(1);
                 ImGui.Spacing();
 
-                ImGui.PushStyleColor(ImGuiCol.Text, WindowUtils.ToImGuiColor(0xffc8ed));
+                ImGui.PushStyleColor(ImGuiCol.Text, Colors.Error);
                 ImGui.Text("Profile not found");
                 ImGui.PopStyleColor();
                 break;
@@ -91,14 +91,14 @@ public class TooltipWindow : Window, IDisposable
 
                 if (profile.Occupation != "")
                 {
-                    ImGui.PushStyleColor(ImGuiCol.Text, WindowUtils.ToImGuiColor(0xff9d20));
+                    ImGui.PushStyleColor(ImGuiCol.Text, Colors.Occupation);
                     ImGui.TextWrapped($"< {profile.Occupation} >");
                     ImGui.PopStyleColor();
                 }
 
                 if (profile.Pronouns != "")
                 {
-                    ImGui.PushStyleColor(ImGuiCol.Text, WindowUtils.ToImGuiColor(0x7e7e7e));
+                    ImGui.PushStyleColor(ImGuiCol.Text, Colors.Label);
                     ImGui.TextWrapped($"Pronouns: {profile.Pronouns}");
                     ImGui.PopStyleColor();
                 }

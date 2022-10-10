@@ -15,8 +15,6 @@ public class ProfileWindow : Window, IDisposable
 {
     public static readonly string DefaultTitle = "Roleplay profile: (no target player)###Roleplay Profile";
 
-    private static readonly uint LabelColor = WindowUtils.ToImGuiColor(0x7e7e7e);
-    private static readonly Vector4 LabelColorVec = ImGui.ColorConvertU32ToFloat4(LabelColor);
     private static readonly float LabelWidth = ImGuiHelpers.ScaledVector2(100, 0).X;
 
     private PluginState pluginState;
@@ -113,7 +111,7 @@ public class ProfileWindow : Window, IDisposable
 
     private static void ShowField(string field, string label)
     {
-        ImGui.TextColored(LabelColorVec, label);
+        ImGui.TextColored(Colors.Label, label);
         ImGui.SameLine(LabelWidth);
         ImGui.TextWrapped(WindowUtils.StripWikitext(field));
         ImGui.NextColumn();

@@ -15,7 +15,6 @@ namespace RoleplayProfiles.Windows;
 public class ConfigWindow : Window, IDisposable
 {
     public static readonly string Title = "Roleplay Profiles Configuration";
-    private static readonly Vector4 ErrorColorVec = ImGui.ColorConvertU32ToFloat4(WindowUtils.ToImGuiColor(0xff4c4c));
 
     private Configuration configuration;
     private ApiClient apiClient;
@@ -77,7 +76,7 @@ public class ConfigWindow : Window, IDisposable
                 ImGui.EndDisabled();
             }
 
-            ImGui.TextColored(ErrorColorVec, exceptionMessage);
+            ImGui.TextColored(Colors.Error, exceptionMessage);
             ImGui.Spacing();
             ImGui.Separator();
             ImGui.Spacing();
