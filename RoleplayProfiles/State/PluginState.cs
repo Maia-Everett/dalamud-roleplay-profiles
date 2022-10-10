@@ -75,6 +75,25 @@ namespace RoleplayProfiles.State
                 cacheEntry.Data = null;
             }
         }
+
+        public async Task SaveProfile(Player player, Profile profile)
+        {
+            if (Configuration.AccessToken == null)
+            {
+                return;
+            }
+
+            var cacheEntry = profileCache[player];
+
+            if (cacheEntry == null)
+            {
+                return;
+            }
+
+            await ApiClient.UpdateProfile(player.Name, player.Server, profile, Configuration.AccessToken);
+            cacheEntry.Data = profile;
+        }
+
         public Player ToPlayer(PlayerCharacter character)
         {
             playerCache.TryGetValue(character, out var player);

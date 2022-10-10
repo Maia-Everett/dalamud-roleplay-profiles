@@ -50,5 +50,19 @@ namespace RoleplayProfiles.Api
 
             return response.Data!;
         }
+
+        public async Task UpdateProfile(string name, string server, Profile profile, string accessToken)
+        {
+            var request = new RestRequest($"/profile/{server}/{name}", Method.Put);
+            request.AddHeader("Authorization", $"Bearer {accessToken}");
+            request.AddBody(profile);
+
+            var response = await restClient.ExecuteAsync<Profile>(request);
+
+            if (response.ErrorException != null)
+            {
+                throw response.ErrorException;
+            }
+        }
     }
 }
