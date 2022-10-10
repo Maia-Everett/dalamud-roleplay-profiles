@@ -83,7 +83,7 @@ public class TooltipWindow : Window, IDisposable
                 var name = profile.Title != "" ? $"{profile.Title} {targetPlayer.Name}" : targetPlayer.Name;
 
                 ImGui.SetWindowFontScale(nameScale);
-                ImGui.Text(targetPlayer.Name);
+                ImGui.Text(name);
                 ImGui.SetWindowFontScale(1);
                 ImGui.Spacing();
 

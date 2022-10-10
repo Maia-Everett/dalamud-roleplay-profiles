@@ -15,7 +15,8 @@ namespace RoleplayProfiles.Windows;
 
 public class EditProfileWindow : Window, IDisposable
 {
-    public static readonly string DefaultTitle = "Edit profile###EditProfile";
+    private static readonly string DefaultTitle = "Edit profile###EditProfile";
+    private static readonly float LabelWidth = ImGuiHelpers.ScaledVector2(100).X;
 
     private readonly PluginState pluginState;
 
@@ -28,7 +29,7 @@ public class EditProfileWindow : Window, IDisposable
     {
         this.SizeConstraints = new WindowSizeConstraints
         {
-            MinimumSize = new Vector2(500, 400),
+            MinimumSize = new Vector2(500, 520),
             MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
         };
 
@@ -82,14 +83,48 @@ public class EditProfileWindow : Window, IDisposable
         {
             profile = cacheEntry.Data;
             localProfile = LocalProfile.Of(profile!);
-            errorMessage = " ";
         }
 
         // Editing area
         ImGui.BeginChild("ScrollRegion", ImGuiHelpers.ScaledVector2(0, -32));
+        ImGui.PushItemWidth(-10);
 
+        ImGui.Text("At first glance");
+        FieldRow("Title", ref localProfile.title);
+        FieldRow("Nickname", ref localProfile.nickname);
+        FieldRow("Occupation", ref localProfile.occupation);
+        FieldRow("Pronouns", ref localProfile.pronouns, 20);
+        FieldRow("Currently", ref localProfile.currently, 1000);
+        FieldRow("OOC Info", ref localProfile.oocInfo, 1000);
 
+        ImGui.Separator();
+        ImGuiHelpers.ScaledDummy(6);
+        ImGui.Text("Expanded profile");
 
+        ImGui.PushStyleColor(ImGuiCol.Text, Colors.OocInfo);
+        ImGui.TextWrapped("To edit outward appearance and background, use the Chaos Archives website.");
+        ImGui.PopStyleColor();
+
+        FieldRow("Age", ref localProfile.age);
+        FieldRow("Birthplace", ref localProfile.birthplace);
+        FieldRow("Residence", ref localProfile.residence);
+        FieldRow("Friends", ref localProfile.friends, 1000);
+        FieldRow("Relatives", ref localProfile.relatives, 1000);
+        FieldRow("Rivals/Enemies", ref localProfile.enemies, 1000);
+        FieldRow("Loves", ref localProfile.loves, 1000);
+        FieldRow("Hates", ref localProfile.hates, 1000);
+        FieldRow("Motto", ref localProfile.motto, 1000);
+        FieldRow("Motivation", ref localProfile.motivation, 1000);
+
+        ImGuiHelpers.ScaledDummy(3);
+
+        if (ImGui.Button("Open Chaos Archives profile"))
+        {
+            var url = $"https://chaosarchives.org/{player.Server}/{player.Name.Replace(' ', '_')}";
+            Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
+        }
+
+        ImGui.PopItemWidth();
         ImGui.EndChild();
 
         // Button bar
@@ -123,6 +158,18 @@ public class EditProfileWindow : Window, IDisposable
         }
     }
 
+    private void FieldRow(string label, ref string field)
+    {
+        FieldRow(label, ref field, 255);
+    }
+
+    private void FieldRow(string label, ref string field, uint maxLength)
+    {
+        ImGui.TextColored(Colors.Label, label);
+        ImGui.SameLine(LabelWidth);
+        ImGui.InputText($" ###{label}", ref field, maxLength);
+    }
+
     private async Task Save(Player player)
     {
         saving = true;
@@ -144,24 +191,24 @@ public class EditProfileWindow : Window, IDisposable
 
     private class LocalProfile
     {
-        private string title = "";
+        public string title = "";
 
-        private string nickname = "";
-        private string occupation = "";
-        private string currently = "";
-        private string oocInfo = "";
-        private string pronouns = "";
+        public string nickname = "";
+        public string occupation = "";
+        public string currently = "";
+        public string oocInfo = "";
+        public string pronouns = "";
 
-        private string age = "";
-        private string birthplace = "";
-        private string residence = "";
-        private string friends = "";
-        private string relatives = "";
-        private string enemies = "";
-        private string loves = "";
-        private string hates = "";
-        private string motto = "";
-        private string motivation = "";
+        public string age = "";
+        public string birthplace = "";
+        public string residence = "";
+        public string friends = "";
+        public string relatives = "";
+        public string enemies = "";
+        public string loves = "";
+        public string hates = "";
+        public string motto = "";
+        public string motivation = "";
 
         // Read only fields
         private string appearance = "";
