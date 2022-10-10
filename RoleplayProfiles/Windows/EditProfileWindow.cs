@@ -11,7 +11,7 @@ namespace RoleplayProfiles.Windows;
 
 public class EditProfileWindow : Window, IDisposable
 {
-    public static readonly string DefaultTitle = "Edit character profile###EditProfile";
+    public static readonly string DefaultTitle = "Edit profile###EditProfile";
 
     private readonly PluginState pluginState;
 
@@ -33,6 +33,14 @@ public class EditProfileWindow : Window, IDisposable
 
     public override void Draw()
     {
-        throw new NotImplementedException();
+        var player = pluginState.GetCurrentPlayer();
+
+        if (player == null || pluginState.Configuration.AccessToken == null)
+        {
+            this.WindowName = DefaultTitle;
+            return;
+        }
+
+        this.WindowName = $"Edit profile: {player.Name}###EditProfile";
     }
 }

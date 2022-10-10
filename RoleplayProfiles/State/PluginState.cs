@@ -91,9 +91,10 @@ namespace RoleplayProfiles.State
             return newPlayer;
         }
 
-        public Player GetCurrentPlayer()
+        public Player? GetCurrentPlayer()
         {
-            return ToPlayer(clientState.LocalPlayer!);
+            var localPlayer = clientState.LocalPlayer!;
+            return localPlayer ? ToPlayer(localPlayer) : null;
         }
 
         public void Dispose()
