@@ -14,6 +14,8 @@ namespace RoleplayProfiles.State
 {
     public class PluginState: IDisposable
     {
+        private static readonly TimeSpan ProfileCacheDuration = TimeSpan.FromMinutes(5);
+
         private readonly Dictionary<Player, ProfileCacheEntry> profileCache = new();
         private readonly ConditionalWeakTable<PlayerCharacter, Player> playerCache = new();
 
@@ -38,6 +40,16 @@ namespace RoleplayProfiles.State
 
             if (cacheEntry != null && cacheEntry.State != CacheEntryState.Failed)
             {
+                // Check expiry time
+                if (cacheEntry.State == CacheEntryState.Retrieved
+                    && DateTime.Now - cacheEntry.Updated > ProfileCacheDuration
+                    && !cacheEntry.Expired)
+                {
+                    PluginLog.Information("Cache expired - reloading profile");
+                    cacheEntry.Expired = true;
+                    _ = GetProfileInternal(player); // Retrieve profile asynchronously
+                }
+
                 return cacheEntry;
             }
 
@@ -60,12 +72,15 @@ namespace RoleplayProfiles.State
                     PluginLog.Information("Succeeded!");
                     cacheEntry.State = CacheEntryState.Retrieved;
                     cacheEntry.Data = profile;
+                    cacheEntry.Updated = DateTime.Now;
+                    cacheEntry.Expired = false;
                 }
                 else
                 {
                     PluginLog.Information("Not found!");
                     cacheEntry.State = CacheEntryState.NotFound;
                     cacheEntry.Data = null;
+                    cacheEntry.Expired = false;
                 }
             }
             catch (Exception)
@@ -73,6 +88,7 @@ namespace RoleplayProfiles.State
                 PluginLog.Information("Failed!");
                 cacheEntry.State = CacheEntryState.Failed;
                 cacheEntry.Data = null;
+                cacheEntry.Expired = false;
             }
         }
 
