@@ -32,6 +32,27 @@ namespace RoleplayProfiles.State
         {
             this.Configuration = configuration;
             this.clientState = clientState;
+
+            ApiClient.OnCharacterUpdated += player =>
+            {
+                if (profileCache.TryGetValue(player, out var cacheEntry) && cacheEntry.State == CacheEntryState.Retrieved)
+                {
+                    // Invalidate cache for a single character
+                    cacheEntry.State = CacheEntryState.Invalidated;
+                }
+            };
+
+            ApiClient.OnDisconnected += () =>
+            {
+                // Disconnection from the WebSocket server invalidates the entire cache
+                foreach (var cacheEntry in profileCache.Values)
+                {
+                    if (cacheEntry.State == CacheEntryState.Retrieved)
+                    {
+                        cacheEntry.State = CacheEntryState.Invalidated;
+                    }
+                }
+            };
         }
 
         public ProfileCacheEntry GetProfile(Player player)
@@ -40,13 +61,11 @@ namespace RoleplayProfiles.State
 
             if (cacheEntry != null && cacheEntry.State != CacheEntryState.Failed)
             {
-                // Check expiry time
-                if (cacheEntry.State == CacheEntryState.Retrieved
-                    && DateTime.Now - cacheEntry.Updated > ProfileCacheDuration
-                    && !cacheEntry.Expired)
+                // Check invalidated flag
+                if (cacheEntry.State == CacheEntryState.Invalidated)
                 {
                     PluginLog.Information("Cache expired - reloading profile");
-                    cacheEntry.Expired = true;
+                    cacheEntry.State = CacheEntryState.Updating;
                     _ = GetProfileInternal(player); // Retrieve profile asynchronously
                 }
 
@@ -65,30 +84,32 @@ namespace RoleplayProfiles.State
 
             try
             {
-                var profile = await ApiClient.GetProfile(player.Name, player.Server);
+                var profile = await ApiClient.GetProfile(player);
                 
                 if (profile != null)
                 {
                     PluginLog.Information("Succeeded!");
                     cacheEntry.State = CacheEntryState.Retrieved;
                     cacheEntry.Data = profile;
-                    cacheEntry.Updated = DateTime.Now;
-                    cacheEntry.Expired = false;
                 }
                 else
                 {
-                    PluginLog.Information("Not found!");
                     cacheEntry.State = CacheEntryState.NotFound;
                     cacheEntry.Data = null;
-                    cacheEntry.Expired = false;
                 }
             }
             catch (Exception)
             {
-                PluginLog.Information("Failed!");
-                cacheEntry.State = CacheEntryState.Failed;
-                cacheEntry.Data = null;
-                cacheEntry.Expired = false;
+                if (cacheEntry.State == CacheEntryState.Updating)
+                {
+                    // Retry later
+                    cacheEntry.State = CacheEntryState.Invalidated;
+                }
+                else
+                {
+                    cacheEntry.State = CacheEntryState.Failed;
+                    cacheEntry.Data = null;
+                }
             }
         }
 
@@ -106,7 +127,7 @@ namespace RoleplayProfiles.State
                 return;
             }
 
-            await ApiClient.UpdateProfile(player.Name, player.Server, profile, Configuration.AccessToken);
+            await ApiClient.UpdateProfile(player, profile, Configuration.AccessToken);
             cacheEntry.Data = profile;
         }
 
@@ -136,6 +157,7 @@ namespace RoleplayProfiles.State
         {
             profileCache.Clear();
             playerCache.Clear();
+            ApiClient.Dispose();
         }
     }
 }

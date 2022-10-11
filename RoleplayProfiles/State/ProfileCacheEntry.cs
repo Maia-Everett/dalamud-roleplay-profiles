@@ -11,7 +11,5 @@ namespace RoleplayProfiles.State
     {
         public CacheEntryState State { get; set; } = CacheEntryState.Pending;
         public Profile? Data { get; set; } = null;
-        internal DateTime Updated { get; set; } = DateTime.MinValue;
-        internal bool Expired { get; set; } = false;
     }
 }

@@ -12,5 +12,7 @@ namespace RoleplayProfiles.State
         Retrieved,
         NotFound,
         Failed,
+        Invalidated,
+        Updating,
     }
 }

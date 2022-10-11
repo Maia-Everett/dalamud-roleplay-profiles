@@ -76,10 +76,26 @@ public class TooltipWindow : Window, IDisposable
                 ImGui.Text("Profile not found");
                 ImGui.PopStyleColor();
                 break;
-            case CacheEntryState.Retrieved:
+            case CacheEntryState.Failed:
+                ImGui.SetWindowFontScale(nameScale);
+                ImGui.Text(targetPlayer.Name);
+                ImGui.SetWindowFontScale(1);
+                ImGui.Spacing();
+
+                ImGui.PushStyleColor(ImGuiCol.Text, Colors.Error);
+                ImGui.Text("Error retrieving profile");
+                ImGui.PopStyleColor();
+                break;
+            default:
+                var profile = cacheEntry.Data;
+
+                if (profile == null)
+                {
+                    return;
+                }
+
                 ImGui.BeginChild("ScrollRegion", ImGuiHelpers.ScaledVector2(0, -32));
 
-                var profile = cacheEntry.Data!;
                 var name = profile.Title != "" ? $"{profile.Title} {targetPlayer.Name}" : targetPlayer.Name;
 
                 ImGui.SetWindowFontScale(nameScale);
