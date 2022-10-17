@@ -145,27 +145,27 @@ public class TooltipWindow : Window, IDisposable
                 ImGui.EndChild();
                 ImGuiHelpers.ScaledDummy(ImGuiHelpers.ScaledVector2(0, 2));
 
-                if (pluginState.Configuration.AccessToken == null)
-                {
-                    if (ImGui.Button("Log in to Chaos Archives"))
-                    {
-                        configWindow.IsOpen = true;
-                    }
-
-                    ImGui.SameLine();
-                }
-                else
-                {
-                    if (ImGui.Button("Edit your profile"))
-                    {
-                        editProfileWindow.IsOpen = true;
-                    }
-
-                    ImGui.SameLine();
-                }
-
                 if (pluginState.TargetPlayerSelected)
                 {
+                    if (pluginState.Configuration.AccessToken == null)
+                    {
+                        if (ImGui.Button("Log in to Chaos Archives"))
+                        {
+                            configWindow.IsOpen = true;
+                        }
+
+                        ImGui.SameLine();
+                    }
+                    else
+                    {
+                        if (ImGui.Button("Edit your profile"))
+                        {
+                            editProfileWindow.IsOpen = true;
+                        }
+
+                        ImGui.SameLine();
+                    }
+
                     var buttonText = "Full profile";
                     var buttonSize = ImGuiHelpers.GetButtonSize(buttonText);
                     ImGui.Text(" ");
