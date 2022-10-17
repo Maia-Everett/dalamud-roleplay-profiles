@@ -25,11 +25,13 @@ public class ConfigWindow : Window, IDisposable
     private string exceptionMessage = "";
     private volatile bool loading = false;
 
-    public ConfigWindow(PluginState pluginState, EditProfileWindow editProfileWindow) : base(
-        Title, ImGuiWindowFlags.NoResize)
+    public ConfigWindow(PluginState pluginState, EditProfileWindow editProfileWindow) : base(Title)
     {
-        this.Size = ImGuiHelpers.ScaledVector2(232, 120);
-        this.SizeCondition = ImGuiCond.Always;
+        this.SizeConstraints = new WindowSizeConstraints
+        {
+            MinimumSize = new Vector2(232, 120),
+            MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
+        };
 
         this.configuration = pluginState.Configuration;
         this.apiClient = pluginState.ApiClient;
