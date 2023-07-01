@@ -1,12 +1,15 @@
-using Dalamud.Interface;
-using Dalamud.Interface.Windowing;
-using ImGuiNET;
-using RoleplayProfiles.Api;
-using RoleplayProfiles.State;
 using System;
 using System.Diagnostics;
 using System.Numerics;
 using System.Threading.Tasks;
+
+using Dalamud.Interface;
+using Dalamud.Interface.Windowing;
+
+using ImGuiNET;
+
+using RoleplayProfiles.Api;
+using RoleplayProfiles.State;
 
 namespace RoleplayProfiles.Windows;
 

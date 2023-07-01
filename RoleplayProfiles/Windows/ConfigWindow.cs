@@ -3,10 +3,13 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Numerics;
 using System.Threading.Tasks;
+
 using Dalamud.Interface;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
+
 using ImGuiNET;
+
 using RoleplayProfiles.Api;
 using RoleplayProfiles.State;
 

@@ -1,12 +1,13 @@
+using Dalamud.Game.ClientState;
+using Dalamud.Game.ClientState.Objects;
+using Dalamud.Game.ClientState.Objects.SubKinds;
+using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
 using Dalamud.Plugin;
-using Dalamud.Interface.Windowing;
-using RoleplayProfiles.Windows;
-using Dalamud.Game.ClientState.Objects;
+
 using RoleplayProfiles.State;
-using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Game.ClientState.Objects.SubKinds;
-using Dalamud.Game.ClientState;
+using RoleplayProfiles.Windows;
 
 namespace RoleplayProfiles
 {
@@ -66,7 +67,7 @@ namespace RoleplayProfiles
             if (IsRoleplayer(target))
             {
                 pluginState.TargetPlayerSelected = target == targetManager.Target;
-                pluginState.TargetPlayer = pluginState.ToPlayer((PlayerCharacter) target!);
+                pluginState.TargetPlayer = pluginState.ToPlayer((PlayerCharacter)target!);
             }
             else
             {
@@ -75,7 +76,7 @@ namespace RoleplayProfiles
                 if (IsRoleplayer(target))
                 {
                     pluginState.TargetPlayerSelected = true;
-                    pluginState.TargetPlayer = pluginState.ToPlayer((PlayerCharacter) target!);
+                    pluginState.TargetPlayer = pluginState.ToPlayer((PlayerCharacter)target!);
                 }
                 else
                 {

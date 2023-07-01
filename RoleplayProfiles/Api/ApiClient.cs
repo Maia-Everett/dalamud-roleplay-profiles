@@ -1,11 +1,14 @@
-using Dalamud.Logging;
-using Dalamud.Utility;
-using RestSharp;
-using SocketIOClient;
-using SocketIOClient.JsonSerializer;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
+
+using Dalamud.Logging;
+using Dalamud.Utility;
+
+using RestSharp;
+
+using SocketIOClient;
+using SocketIOClient.JsonSerializer;
 
 namespace RoleplayProfiles.Api;
 

@@ -1,6 +1,7 @@
-using ImGuiNET;
 using System.Numerics;
 using System.Text.RegularExpressions;
+
+using ImGuiNET;
 
 namespace RoleplayProfiles.Windows;
 
