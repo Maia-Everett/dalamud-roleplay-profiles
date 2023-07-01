@@ -1,4 +1,5 @@
 using Dalamud.Logging;
+using Dalamud.Utility;
 using RestSharp;
 using SocketIOClient;
 using SocketIOClient.JsonSerializer;
@@ -46,6 +47,13 @@ public class ApiClient : IDisposable
 
         var promise = new TaskCompletionSource<string>();
         socketIOClient = new SocketIO("wss://chaosarchives.org/updates");
+
+        if (Util.IsLinux()) {
+            // Work around infinite loading bug under Wine set to Windows 10
+            socketIOClient.Options.Transport = SocketIOClient.Transport.TransportProtocol.Polling;
+            socketIOClient.Options.AutoUpgrade = false;
+        }
+
         (socketIOClient.JsonSerializer as SystemTextJsonSerializer)!.OptionsProvider =
             () => new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
