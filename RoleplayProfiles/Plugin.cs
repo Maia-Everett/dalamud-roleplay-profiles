@@ -1,4 +1,5 @@
 using Dalamud.Game.ClientState;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
@@ -19,6 +20,7 @@ namespace RoleplayProfiles
 
         private readonly TargetManager targetManager;
         private readonly PluginState pluginState;
+        private readonly Condition condition;
 
         private readonly WindowSystem windowSystem = new("RoleplayProfiles");
         private readonly TooltipWindow tooltipWindow;
@@ -29,9 +31,11 @@ namespace RoleplayProfiles
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
             [RequiredVersion("1.0")] TargetManager targetManager,
-            [RequiredVersion("1.0")] ClientState clientState)
+            [RequiredVersion("1.0")] ClientState clientState,
+            [RequiredVersion("1.0")] Condition condition)
         {
             this.targetManager = targetManager;
+            this.condition = condition;
 
             var configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             configuration.Initialize(pluginInterface);
@@ -64,7 +68,13 @@ namespace RoleplayProfiles
         {
             var target = targetManager.MouseOverTarget;
 
-            if (IsRoleplayer(target))
+            if (!pluginState.Configuration.EnableInDuties && condition[ConditionFlag.BoundByDuty])
+            {
+                // We're in a duty - hide plugin UI
+                pluginState.TargetPlayerSelected = false;
+                pluginState.TargetPlayer = null;
+            }
+            else if (IsRoleplayer(target))
             {
                 pluginState.TargetPlayerSelected = target == targetManager.Target;
                 pluginState.TargetPlayer = pluginState.ToPlayer((PlayerCharacter)target!);
