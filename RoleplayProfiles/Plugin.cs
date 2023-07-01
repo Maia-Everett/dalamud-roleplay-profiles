@@ -3,6 +3,8 @@ using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Game.Command;
+using Dalamud.Game.Gui;
 using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
 using Dalamud.Plugin;
@@ -14,13 +16,15 @@ namespace RoleplayProfiles
 {
     public sealed class Plugin : IDalamudPlugin
     {
-        private static readonly uint PlayerStatusRoleplayer = 22;
+        private const uint PlayerStatusRoleplayer = 22;
 
         public string Name => "Roleplay Profiles";
 
         private readonly TargetManager targetManager;
-        private readonly PluginState pluginState;
         private readonly Condition condition;
+        private readonly CommandManager commandManager;
+
+        private readonly PluginState pluginState;
 
         private readonly WindowSystem windowSystem = new("RoleplayProfiles");
         private readonly TooltipWindow tooltipWindow;
@@ -32,10 +36,13 @@ namespace RoleplayProfiles
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
             [RequiredVersion("1.0")] TargetManager targetManager,
             [RequiredVersion("1.0")] ClientState clientState,
-            [RequiredVersion("1.0")] Condition condition)
+            [RequiredVersion("1.0")] Condition condition,
+            [RequiredVersion("1.0")] CommandManager commandManager,
+            [RequiredVersion("1.0")] ChatGui chatGui)
         {
             this.targetManager = targetManager;
             this.condition = condition;
+            this.commandManager = commandManager;
 
             var configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             configuration.Initialize(pluginInterface);
@@ -54,12 +61,20 @@ namespace RoleplayProfiles
             tooltipWindow = new TooltipWindow(pluginState, profileWindow, configWindow, editProfileWindow);
             windowSystem.AddWindow(tooltipWindow);
 
+            var commandHandler = new CommandHandler(
+                pluginState, configWindow, profileWindow, editProfileWindow, chatGui);
+            commandManager.AddHandler(CommandHandler.CommandName, new CommandInfo(commandHandler.OnCommand)
+            {
+                HelpMessage = "Controls the Roleplay Profiles plugin."
+            });
+
             pluginInterface.UiBuilder.Draw += DrawUI;
             pluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
         }
 
         public void Dispose()
         {
+            commandManager.RemoveHandler(CommandHandler.CommandName);
             windowSystem.RemoveAllWindows();
             pluginState.Dispose();
         }
