@@ -3,11 +3,7 @@ using Dalamud.Interface.Windowing;
 using ImGuiNET;
 using RoleplayProfiles.State;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RoleplayProfiles.Windows;
 

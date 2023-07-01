@@ -6,7 +6,6 @@ using Dalamud.Game.ClientState.Objects;
 using RoleplayProfiles.State;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
-using System.Runtime.CompilerServices;
 using Dalamud.Game.ClientState;
 
 namespace RoleplayProfiles

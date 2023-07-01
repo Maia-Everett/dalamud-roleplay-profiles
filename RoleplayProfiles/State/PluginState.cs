@@ -1,13 +1,10 @@
 using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Logging;
-using RestSharp;
 using RoleplayProfiles.Api;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RoleplayProfiles.State
