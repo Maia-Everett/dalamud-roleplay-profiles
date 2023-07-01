@@ -26,19 +26,23 @@ public class ConfigWindow : Window, IDisposable
     private string userEmail;
     private string userPassword = "";
     private string exceptionMessage = "";
+    private bool enable;
+    private bool enableInDuties;
     private volatile bool loading = false;
 
     public ConfigWindow(PluginState pluginState, EditProfileWindow editProfileWindow) : base(Title)
     {
         this.SizeConstraints = new WindowSizeConstraints
         {
-            MinimumSize = new Vector2(232, 120),
+            MinimumSize = new Vector2(232, 160),
             MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
         };
 
         this.configuration = pluginState.Configuration;
         this.apiClient = pluginState.ApiClient;
         userEmail = configuration.UserEmail ?? "";
+        enable = configuration.Enable;
+        enableInDuties = configuration.EnableInDuties;
 
         this.editProfileWindow = editProfileWindow;
     }
@@ -126,6 +130,31 @@ public class ConfigWindow : Window, IDisposable
             {
                 editProfileWindow.IsOpen = true;
             }
+        }
+
+        ImGui.Separator();
+        ImGuiHelpers.ScaledDummy(12);
+
+        // Checkboxes area
+        
+        if (ImGui.Checkbox("Enable", ref enable) != configuration.Enable) {
+            configuration.Enable = enable;
+            configuration.Save();
+        }
+
+        if (!enable)
+        {
+            ImGui.BeginDisabled();
+        }
+        
+        if (ImGui.Checkbox("Enable during duties", ref enableInDuties) != configuration.EnableInDuties) {
+            configuration.EnableInDuties = enableInDuties;
+            configuration.Save();
+        }
+
+        if (!enable)
+        {
+            ImGui.EndDisabled();
         }
     }
 

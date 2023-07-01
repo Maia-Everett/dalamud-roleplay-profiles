@@ -68,7 +68,13 @@ namespace RoleplayProfiles
         {
             var target = targetManager.MouseOverTarget;
 
-            if (!pluginState.Configuration.EnableInDuties && condition[ConditionFlag.BoundByDuty])
+            if (!pluginState.Configuration.Enable)
+            {
+                // Plugin is disabled - hide plugin UI
+                pluginState.TargetPlayerSelected = false;
+                pluginState.TargetPlayer = null;
+            }
+            else if (!pluginState.Configuration.EnableInDuties && condition[ConditionFlag.BoundByDuty])
             {
                 // We're in a duty - hide plugin UI
                 pluginState.TargetPlayerSelected = false;
