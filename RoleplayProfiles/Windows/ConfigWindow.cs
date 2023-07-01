@@ -132,6 +132,7 @@ public class ConfigWindow : Window, IDisposable
             }
         }
 
+        ImGuiHelpers.ScaledDummy(12);
         ImGui.Separator();
         ImGuiHelpers.ScaledDummy(12);
 
