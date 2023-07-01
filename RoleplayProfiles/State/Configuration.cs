@@ -11,6 +11,7 @@ namespace RoleplayProfiles.State
         public int Version { get; set; } = 0;
         public string? UserEmail { get; set; } = null;
         public string? AccessToken { get; set; } = null;
+        public bool AccessTokenExpired { get; set; } = false;
         public bool Enable { get; set; } = true;
         public bool EnableInDuties { get; set; } = false;
 

@@ -123,6 +123,21 @@ public class ApiClient : IDisposable
         return response.Data!;
     }
 
+    public async Task<ExtendLoginResponse> ExtendLogin(string accessToken)
+    {
+        var request = new RestRequest("/extend-login", Method.Post);
+        request.AddHeader("Authorization", $"Bearer {accessToken}");
+        
+        var response = await restClient.ExecuteAsync<ExtendLoginResponse>(request);
+
+        if (response.ErrorException != null)
+        {
+            throw response.ErrorException;
+        }
+
+        return response.Data!;
+    }
+
     public async Task UpdateProfile(Player player, Profile profile, string accessToken)
     {
         var request = new RestRequest($"/profile/{player.Server}/{player.Name}", Method.Put);

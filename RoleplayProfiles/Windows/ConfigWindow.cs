@@ -56,7 +56,15 @@ public class ConfigWindow : Window, IDisposable
     {
         if (configuration.AccessToken == null)
         {
-            ImGui.TextWrapped("To edit your character profiles in-game, you need to log in to Chaos Archives.");
+            if (!configuration.AccessTokenExpired)
+            {
+                ImGui.TextWrapped("To edit your character profiles in-game, you need to log in to Chaos Archives.");
+            }
+            else
+            {
+                ImGui.TextWrapped("Your Chaos Archives login session has expired. Please log in again.");
+            }
+            
             ImGui.Spacing();
 
             var labelWidth = ImGuiHelpers.ScaledVector2(160, 0).X;
@@ -120,6 +128,7 @@ public class ConfigWindow : Window, IDisposable
             {
                 configuration.UserEmail = null;
                 configuration.AccessToken = null;
+                configuration.AccessTokenExpired = false;
             }
 
             ImGui.Spacing();
@@ -168,6 +177,7 @@ public class ConfigWindow : Window, IDisposable
             var email = userEmail;
             var response = await apiClient.Login(userEmail, userPassword);
             configuration.AccessToken = response.AccessToken;
+            configuration.AccessTokenExpired = false;
             configuration.UserEmail = email;
             configuration.Save();
         }

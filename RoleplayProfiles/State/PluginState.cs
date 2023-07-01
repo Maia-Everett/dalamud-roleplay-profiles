@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -52,6 +53,43 @@ namespace RoleplayProfiles.State
                     }
                 }
             };
+        }
+
+        public void RefreshSessionIfNecessary()
+        {
+            if (Configuration.AccessToken != null)
+            {
+                PluginLog.Information("Refreshing access token");
+                _ = RefreshSessionInternal();
+            }
+        }
+
+        private async Task RefreshSessionInternal()
+        {
+            try
+            {
+                // we check for non-null before calling this method
+                var response = await ApiClient.ExtendLogin(Configuration.AccessToken!);
+
+                if (response.NewAccessToken != null)
+                {
+                    PluginLog.Information("Access token refreshed");
+                    Configuration.AccessToken = response.NewAccessToken;
+                    Configuration.AccessTokenExpired = false;
+                }
+                else
+                {
+                    PluginLog.Information("Access token didn't need refreshing");
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    Configuration.AccessToken = null;
+                    Configuration.AccessTokenExpired = true;
+                }
+            }
         }
 
         public ProfileCacheEntry GetProfile(Player player)

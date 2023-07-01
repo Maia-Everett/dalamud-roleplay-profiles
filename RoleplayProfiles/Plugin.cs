@@ -70,6 +70,8 @@ namespace RoleplayProfiles
 
             pluginInterface.UiBuilder.Draw += DrawUI;
             pluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
+
+            pluginState.RefreshSessionIfNecessary();
         }
 
         public void Dispose()
