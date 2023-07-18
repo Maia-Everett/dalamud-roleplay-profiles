@@ -14,8 +14,6 @@ namespace RoleplayProfiles.State
 {
     public class PluginState: IDisposable
     {
-        private static readonly TimeSpan ProfileCacheDuration = TimeSpan.FromMinutes(5);
-
         private readonly Dictionary<Player, ProfileCacheEntry> profileCache = new();
         private readonly ConditionalWeakTable<PlayerCharacter, Player> playerCache = new();
 
