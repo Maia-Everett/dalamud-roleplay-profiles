@@ -14,6 +14,9 @@ namespace RoleplayProfiles.Api;
 
 public class ApiClient : IDisposable
 {
+    private const string ApiUrl = "https://chaosarchives.org/api/rpp";
+    private const string SocketIOUrl = "wss://chaosarchives.org/updates";
+
     // Events
 
     public delegate void OnDisconnectedEventHandler();
@@ -24,7 +27,7 @@ public class ApiClient : IDisposable
 
     // Instance state
 
-    private readonly RestClient restClient = new RestClient(new RestClientOptions("https://chaosarchives.org/api/rpp")
+    private readonly RestClient restClient = new RestClient(new RestClientOptions(ApiUrl)
     {
         ThrowOnAnyError = true,
     });
@@ -46,7 +49,7 @@ public class ApiClient : IDisposable
         }
 
         var promise = new TaskCompletionSource<string>();
-        socketIOClient = new SocketIO("wss://chaosarchives.org/updates");
+        socketIOClient = new SocketIO(SocketIOUrl);
 
         if (Util.IsLinux()) {
             // Work around infinite loading bug under Wine set to Windows 10
