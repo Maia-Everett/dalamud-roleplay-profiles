@@ -11,8 +11,8 @@ namespace RoleplayProfiles.State
 {
     public class PluginState: IDisposable
     {
-        private readonly Dictionary<Player, ProfileCacheEntry> profileCache = [];
-        private readonly ConditionalWeakTable<PlayerCharacter, Player> playerCache = [];
+        private readonly Dictionary<Player, ProfileCacheEntry> profileCache = new();
+        private readonly ConditionalWeakTable<PlayerCharacter, Player> playerCache = new();
 
         public ApiClient ApiClient { get; init; } = new();
         public Configuration Configuration { get; init; }
