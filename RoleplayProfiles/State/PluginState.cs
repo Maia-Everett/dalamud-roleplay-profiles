@@ -3,19 +3,16 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
-using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Objects.SubKinds;
-using Dalamud.Logging;
-
+using Dalamud.Plugin.Services;
 using RoleplayProfiles.Api;
 
 namespace RoleplayProfiles.State
 {
     public class PluginState: IDisposable
     {
-        private readonly Dictionary<Player, ProfileCacheEntry> profileCache = new();
-        private readonly ConditionalWeakTable<PlayerCharacter, Player> playerCache = new();
+        private readonly Dictionary<Player, ProfileCacheEntry> profileCache = [];
+        private readonly ConditionalWeakTable<PlayerCharacter, Player> playerCache = [];
 
         public ApiClient ApiClient { get; init; } = new();
         public Configuration Configuration { get; init; }
@@ -24,9 +21,9 @@ namespace RoleplayProfiles.State
         public Player? ProfilePlayer { get; set; } = null;
         public bool TargetPlayerSelected { get; set; } = false;
 
-        private readonly ClientState clientState;
+        private readonly IClientState clientState;
 
-        public PluginState(Configuration configuration, ClientState clientState)
+        public PluginState(Configuration configuration, IClientState clientState)
         {
             this.Configuration = configuration;
             this.clientState = clientState;
@@ -57,7 +54,7 @@ namespace RoleplayProfiles.State
         {
             if (Configuration.AccessToken != null)
             {
-                PluginLog.Information("Refreshing access token");
+                // PluginLog.Information("Refreshing access token");
                 _ = RefreshSessionInternal();
             }
         }
@@ -71,13 +68,13 @@ namespace RoleplayProfiles.State
 
                 if (response.NewAccessToken != null)
                 {
-                    PluginLog.Information("Access token refreshed");
+                    // PluginLog.Information("Access token refreshed");
                     Configuration.AccessToken = response.NewAccessToken;
                     Configuration.AccessTokenExpired = false;
                 }
                 else
                 {
-                    PluginLog.Information("Access token didn't need refreshing");
+                    // PluginLog.Information("Access token didn't need refreshing");
                 }
             }
             catch (HttpRequestException e)
@@ -99,7 +96,7 @@ namespace RoleplayProfiles.State
                 // Check invalidated flag
                 if (cacheEntry.State == CacheEntryState.Invalidated)
                 {
-                    PluginLog.Information("Cache expired - reloading profile");
+                    // PluginLog.Information("Cache expired - reloading profile");
                     cacheEntry.State = CacheEntryState.Updating;
                     _ = GetProfileInternal(player); // Retrieve profile asynchronously
                 }
@@ -123,7 +120,7 @@ namespace RoleplayProfiles.State
                 
                 if (profile != null)
                 {
-                    PluginLog.Information("Succeeded!");
+                    // PluginLog.Information("Succeeded!");
                     cacheEntry.State = CacheEntryState.Retrieved;
                     cacheEntry.Data = profile;
                 }

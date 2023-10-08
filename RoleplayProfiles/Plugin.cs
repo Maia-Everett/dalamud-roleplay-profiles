@@ -1,14 +1,12 @@
-using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Command;
-using Dalamud.Game.Gui;
 using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
 using Dalamud.Plugin;
-
+using Dalamud.Plugin.Services;
 using RoleplayProfiles.State;
 using RoleplayProfiles.Windows;
 
@@ -20,9 +18,9 @@ namespace RoleplayProfiles
 
         public string Name => "Roleplay Profiles";
 
-        private readonly TargetManager targetManager;
-        private readonly Condition condition;
-        private readonly CommandManager commandManager;
+        private readonly ITargetManager targetManager;
+        private readonly ICondition condition;
+        private readonly ICommandManager commandManager;
 
         private readonly PluginState pluginState;
 
@@ -34,11 +32,11 @@ namespace RoleplayProfiles
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
-            [RequiredVersion("1.0")] TargetManager targetManager,
-            [RequiredVersion("1.0")] ClientState clientState,
-            [RequiredVersion("1.0")] Condition condition,
-            [RequiredVersion("1.0")] CommandManager commandManager,
-            [RequiredVersion("1.0")] ChatGui chatGui)
+            [RequiredVersion("1.0")] ITargetManager targetManager,
+            [RequiredVersion("1.0")] IClientState clientState,
+            [RequiredVersion("1.0")] ICondition condition,
+            [RequiredVersion("1.0")] ICommandManager commandManager,
+            [RequiredVersion("1.0")] IChatGui chatGui)
         {
             this.targetManager = targetManager;
             this.condition = condition;

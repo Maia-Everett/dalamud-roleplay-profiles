@@ -3,10 +3,8 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Numerics;
 using System.Threading.Tasks;
-
-using Dalamud.Interface;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
-using Dalamud.Logging;
 
 using ImGuiNET;
 
@@ -183,7 +181,7 @@ public class ConfigWindow : Window, IDisposable
         }
         catch (HttpRequestException e)
         {
-            PluginLog.Information("Error logging in: " + e.Message);
+            // PluginLog.Information("Error logging in: " + e.Message);
 
             if (e.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
@@ -196,7 +194,7 @@ public class ConfigWindow : Window, IDisposable
         }
         catch (Exception e)
         {
-            PluginLog.Information("Error logging in: " + e.Message);
+            // PluginLog.Information("Error logging in: " + e.Message);
             exceptionMessage = e.Message;
         }
         finally

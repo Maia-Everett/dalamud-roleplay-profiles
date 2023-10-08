@@ -1,8 +1,6 @@
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
-
-using Dalamud.Logging;
 using Dalamud.Utility;
 
 using RestSharp;
@@ -51,7 +49,7 @@ public class ApiClient : IDisposable
         var promise = new TaskCompletionSource<string>();
         socketIOClient = new SocketIO(SocketIOUrl);
 
-        if (Util.IsLinux()) {
+        if (Util.IsWine()) {
             // Work around infinite loading bug under Wine set to Windows 10
             socketIOClient.Options.Transport = SocketIOClient.Transport.TransportProtocol.Polling;
             socketIOClient.Options.AutoUpgrade = false;
@@ -62,7 +60,7 @@ public class ApiClient : IDisposable
 
         socketIOClient.OnDisconnected += (sender, args) =>
         {
-            PluginLog.Information("Disconnected");
+            // PluginLog.Information("Disconnected");
             sessionToken = null;
             OnDisconnected?.Invoke();
         };
@@ -70,7 +68,7 @@ public class ApiClient : IDisposable
         socketIOClient.On("session", response =>
         {
             var sessionToken = response.GetValue<SessionResult>().SessionToken;
-            PluginLog.Information("Retrieved session token");
+            // PluginLog.Information("Retrieved session token");
             this.sessionToken = sessionToken;
             promise.TrySetResult(sessionToken);
         });
@@ -78,7 +76,7 @@ public class ApiClient : IDisposable
         socketIOClient.On("character.updated", response =>
         {
             var player = response.GetValue<Player>();
-            PluginLog.Information("Character updated: " + player);
+            // PluginLog.Information("Character updated: " + player);
             OnCharacterUpdated?.Invoke(player);
         });
 

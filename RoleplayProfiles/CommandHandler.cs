@@ -1,5 +1,4 @@
-using System;
-using Dalamud.Game.Gui;
+using Dalamud.Plugin.Services;
 using RoleplayProfiles.State;
 using RoleplayProfiles.Windows;
 
@@ -21,10 +20,10 @@ internal class CommandHandler
     private readonly ConfigWindow configWindow;
 	private readonly ProfileWindow profileWindow;
     private readonly EditProfileWindow editProfileWindow;
-    private readonly ChatGui chatGui;
+    private readonly IChatGui chatGui;
 
     internal CommandHandler(PluginState pluginState, ConfigWindow configWindow, ProfileWindow profileWindow,
-		EditProfileWindow editProfileWindow, ChatGui chatGui)
+		EditProfileWindow editProfileWindow, IChatGui chatGui)
     {
         this.pluginState = pluginState;
         this.configWindow = configWindow;
