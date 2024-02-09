@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Dalamud.Utility;
@@ -15,6 +16,8 @@ public class ApiClient : IDisposable
     private const string ApiUrl = "https://chaosarchives.org/api/rpp";
     private const string SocketIOUrl = "wss://chaosarchives.org/updates";
 
+    public const string ErrorKeyContent = "Content";
+
     // Events
 
     public delegate void OnDisconnectedEventHandler();
@@ -27,7 +30,7 @@ public class ApiClient : IDisposable
 
     private readonly RestClient restClient = new RestClient(new RestClientOptions(ApiUrl)
     {
-        ThrowOnAnyError = true,
+        // ThrowOnAnyError = true,
     });
 
     private SocketIO? socketIOClient = null;
@@ -90,7 +93,7 @@ public class ApiClient : IDisposable
         var request = new RestRequest($"/profile/{player.Server}/{player.Name}");
         request.AddParameter("sessionToken", sessionToken);
 
-        var response = await restClient.ExecuteAsync<Profile>(request);
+        var response = await ExecuteAsync<Profile>(request);
 
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
@@ -105,19 +108,21 @@ public class ApiClient : IDisposable
         return response.Data;
     }
 
-    public async Task<LoginResponse> Login(string email, string password)
+    public async Task<LoginResponse> Login(string email, string password, string? otp)
     {
         var request = new RestRequest("/login", Method.Post);
         request.AddBody(new LoginRequest
         {
             Email = email,
             Password = password,
+            Otp = otp,
         });
 
-        var response = await restClient.ExecuteAsync<LoginResponse>(request);
+        var response = await ExecuteAsync<LoginResponse>(request);
 
         if (response.ErrorException != null)
         {
+            response.ErrorException.Data.Add(ErrorKeyContent, response.Content);
             throw response.ErrorException;
         }
 
@@ -129,7 +134,7 @@ public class ApiClient : IDisposable
         var request = new RestRequest("/extend-login", Method.Post);
         request.AddHeader("Authorization", $"Bearer {accessToken}");
         
-        var response = await restClient.ExecuteAsync<ExtendLoginResponse>(request);
+        var response = await ExecuteAsync<ExtendLoginResponse>(request);
 
         if (response.ErrorException != null)
         {
@@ -145,11 +150,43 @@ public class ApiClient : IDisposable
         request.AddHeader("Authorization", $"Bearer {accessToken}");
         request.AddBody(profile);
 
-        var response = await restClient.ExecuteAsync<Profile>(request);
+        var response = await ExecuteAsync<Profile>(request);
 
         if (response.ErrorException != null)
         {
             throw response.ErrorException;
+        }
+    }
+
+    private async Task<RestResponse<T>> ExecuteAsync<T>(RestRequest request)
+    {
+        var response = await restClient.ExecuteAsync<T>(request);
+        var responseStatusCategory = ((int) response.StatusCode) % 100;
+
+        if (responseStatusCategory == 4 || responseStatusCategory == 5
+            || response.ErrorException is HttpRequestException)
+        {
+            throw new ApiException(response.StatusCode, GetErrorMessage(response.Content!));
+        }
+
+        if (response.ErrorException != null)
+        {
+            throw response.ErrorException;
+        }
+
+        return response;
+    }
+
+    private string GetErrorMessage(string errorResponse)
+    {
+        try {
+            var responseObject = JsonSerializer.Deserialize<ApiErrorResponse>(errorResponse,
+                new JsonSerializerOptions(JsonSerializerDefaults.Web));
+            return responseObject!.Message;
+        }
+        catch (Exception)
+        {
+            return errorResponse;
         }
     }
 

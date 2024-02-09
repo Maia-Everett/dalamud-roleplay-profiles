@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
-
+using Dalamud.Logging;
 using ImGuiNET;
 
 using RoleplayProfiles.Api;
@@ -23,16 +23,18 @@ public class ConfigWindow : Window, IDisposable
 
     private string userEmail;
     private string userPassword = "";
+    private string otp = "";
     private string exceptionMessage = "";
     private bool enable;
     private bool enableInDuties;
+    private volatile bool showOtp;
     private volatile bool loading = false;
 
     public ConfigWindow(PluginState pluginState, EditProfileWindow editProfileWindow) : base(Title)
     {
         this.SizeConstraints = new WindowSizeConstraints
         {
-            MinimumSize = new Vector2(232, 160),
+            MinimumSize = new Vector2(500, 320),
             MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
         };
 
@@ -62,7 +64,7 @@ public class ConfigWindow : Window, IDisposable
             {
                 ImGui.TextWrapped("Your Chaos Archives login session has expired. Please log in again.");
             }
-            
+
             ImGui.Spacing();
 
             var labelWidth = ImGuiHelpers.ScaledVector2(160, 0).X;
@@ -74,6 +76,14 @@ public class ConfigWindow : Window, IDisposable
             ImGui.Text("Chaos Archives password:");
             ImGui.SameLine(labelWidth);
             ImGui.InputText("###Password", ref userPassword, 255, ImGuiInputTextFlags.Password);
+
+            if (showOtp)
+            {
+                ImGui.Text("One-time password:");
+                ImGui.SameLine(labelWidth);
+                ImGui.InputText("###OTP", ref otp, 60);
+            }
+
             ImGui.Spacing();
 
             var disabled = userEmail == "" || userPassword == "" || loading;
@@ -92,7 +102,7 @@ public class ConfigWindow : Window, IDisposable
             {
                 _ = Login();
             }
-            
+
             if (disabled)
             {
                 ImGui.EndDisabled();
@@ -144,8 +154,9 @@ public class ConfigWindow : Window, IDisposable
         ImGuiHelpers.ScaledDummy(12);
 
         // Checkboxes area
-        
-        if (ImGui.Checkbox("Enable", ref enable) != configuration.Enable) {
+
+        if (ImGui.Checkbox("Enable", ref enable) != configuration.Enable)
+        {
             configuration.Enable = enable;
             configuration.Save();
         }
@@ -154,8 +165,9 @@ public class ConfigWindow : Window, IDisposable
         {
             ImGui.BeginDisabled();
         }
-        
-        if (ImGui.Checkbox("Enable during duties", ref enableInDuties) != configuration.EnableInDuties) {
+
+        if (ImGui.Checkbox("Enable during duties", ref enableInDuties) != configuration.EnableInDuties)
+        {
             configuration.EnableInDuties = enableInDuties;
             configuration.Save();
         }
@@ -173,19 +185,21 @@ public class ConfigWindow : Window, IDisposable
         try
         {
             var email = userEmail;
-            var response = await apiClient.Login(userEmail, userPassword);
+            var response = await apiClient.Login(userEmail, userPassword, showOtp ? otp : null);
             configuration.AccessToken = response.AccessToken;
             configuration.AccessTokenExpired = false;
             configuration.UserEmail = email;
             configuration.Save();
+
+            exceptionMessage = "";
         }
-        catch (HttpRequestException e)
+        catch (ApiException e)
         {
             // PluginLog.Information("Error logging in: " + e.Message);
-
-            if (e.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            if (e.StatusCode == System.Net.HttpStatusCode.BadRequest && e.Message == "OTP_REQUIRED")
             {
-                exceptionMessage = "Invalid email or password";
+                showOtp = true;
+                exceptionMessage = "Please enter your one-time password for Chaos Archives";
             }
             else
             {
