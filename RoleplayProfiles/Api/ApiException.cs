@@ -3,7 +3,13 @@ using System.Net;
 
 namespace RoleplayProfiles.Api;
 
-public class ApiException(HttpStatusCode statusCode, string message) : ApplicationException(message)
+public class ApiException : ApplicationException
 {
-    public HttpStatusCode StatusCode { get; init; } = statusCode;
+    public HttpStatusCode StatusCode { get; init; }
+
+    public ApiException(HttpStatusCode statusCode, string message)
+        : base(message)
+    {
+        StatusCode = statusCode;
+    }
 }
