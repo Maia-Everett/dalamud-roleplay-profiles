@@ -1,13 +1,9 @@
 using System;
 using System.Net;
 
-public class ApiException : ApplicationException
-{
-    public HttpStatusCode StatusCode { get; init; }
+namespace RoleplayProfiles.Api;
 
-    public ApiException(HttpStatusCode statusCode, string message)
-        : base(message)
-    {
-        StatusCode = statusCode;
-    }
+public class ApiException(HttpStatusCode statusCode, string message) : ApplicationException(message)
+{
+    public HttpStatusCode StatusCode { get; init; } = statusCode;
 }
