@@ -16,8 +16,6 @@ public class ApiClient : IDisposable
     private const string ApiUrl = "https://chaosarchives.org/api/rpp";
     private const string SocketIOUrl = "wss://chaosarchives.org/updates";
 
-    public const string ErrorKeyContent = "Content";
-
     // Events
 
     public delegate void OnDisconnectedEventHandler();
@@ -30,7 +28,7 @@ public class ApiClient : IDisposable
 
     private readonly RestClient restClient = new RestClient(new RestClientOptions(ApiUrl)
     {
-        // ThrowOnAnyError = true,
+        
     });
 
     private SocketIO? socketIOClient = null;
@@ -93,19 +91,26 @@ public class ApiClient : IDisposable
         var request = new RestRequest($"/profile/{player.Server}/{player.Name}");
         request.AddParameter("sessionToken", sessionToken);
 
-        var response = await ExecuteAsync<Profile>(request);
-
-        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        try
         {
-            return null;
-        }
+            var response = await ExecuteAsync<Profile>(request);
 
-        if (response.ErrorException != null)
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+            return response.Data;
+        }
+        catch (ApiException e)
         {
-            throw response.ErrorException;
-        }
+            if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return null;
+            }
 
-        return response.Data;
+            throw e;
+        }
     }
 
     public async Task<LoginResponse> Login(string email, string password, string? otp)
@@ -119,13 +124,6 @@ public class ApiClient : IDisposable
         });
 
         var response = await ExecuteAsync<LoginResponse>(request);
-
-        if (response.ErrorException != null)
-        {
-            response.ErrorException.Data.Add(ErrorKeyContent, response.Content);
-            throw response.ErrorException;
-        }
-
         return response.Data!;
     }
 
@@ -135,12 +133,6 @@ public class ApiClient : IDisposable
         request.AddHeader("Authorization", $"Bearer {accessToken}");
         
         var response = await ExecuteAsync<ExtendLoginResponse>(request);
-
-        if (response.ErrorException != null)
-        {
-            throw response.ErrorException;
-        }
-
         return response.Data!;
     }
 
@@ -151,11 +143,6 @@ public class ApiClient : IDisposable
         request.AddBody(profile);
 
         var response = await ExecuteAsync<Profile>(request);
-
-        if (response.ErrorException != null)
-        {
-            throw response.ErrorException;
-        }
     }
 
     private async Task<RestResponse<T>> ExecuteAsync<T>(RestRequest request)
