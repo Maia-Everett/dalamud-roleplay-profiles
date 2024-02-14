@@ -115,7 +115,7 @@ public class ConfigWindow : Window, IDisposable
 
             ImGui.TextWrapped("Not yet registered on Chaos Archives? Sign up now! " +
                 "(The button will open the signup page in your web browser.)");
-            ImGui.TextWrapped("Currently signups are only available to characters in the Europe region.");
+            ImGui.TextWrapped("Currently signups are available for characters on Europe and North America servers.");
 
             var signUpButtonText = "Sign up";
             var signUpButtonSize = ImGuiHelpers.GetButtonSize(signUpButtonText);
