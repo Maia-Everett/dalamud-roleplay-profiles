@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Dalamud.Utility;
@@ -26,9 +27,9 @@ public class ApiClient : IDisposable
 
     // Instance state
 
-    private readonly RestClient restClient = new RestClient(new RestClientOptions(ApiUrl)
+    private readonly RestClient restClient = new (new RestClientOptions(ApiUrl)
     {
-        
+        UserAgent = $"RoleplayProfiles/{Assembly.GetExecutingAssembly().GetName().Version}"
     });
 
     private SocketIO? socketIOClient = null;
