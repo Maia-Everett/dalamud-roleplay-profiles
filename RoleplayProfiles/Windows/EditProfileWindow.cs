@@ -56,6 +56,7 @@ public class EditProfileWindow : Window, IDisposable
         this.WindowName = $"Edit profile: {player.Name}###EditProfile";
 
         var cacheEntry = pluginState.GetProfile(player);
+        var siteName = pluginState.RegionSite.Name;
 
         if (cacheEntry.State == CacheEntryState.Pending)
         {
@@ -65,12 +66,12 @@ public class EditProfileWindow : Window, IDisposable
         else if (cacheEntry.State == CacheEntryState.NotFound)
         {
             ImGui.TextWrapped($"Profile not found. It is possible that you have not added this character " +
-                    $"{player.Name} ({player.Server}) to your Chaos Archives account, or have not yet verified " +
+                    $"{player.Name} ({player.Server}) to your {siteName} account, or have not yet verified " +
                     $"your ownership of this character.");
 
-            if (ImGui.Button("Open Chaos Archives"))
+            if (ImGui.Button("Open {siteName}"))
             {
-                Process.Start(new ProcessStartInfo { FileName = "https://chaosarchives.org", UseShellExecute = true });
+                Process.Start(new ProcessStartInfo { FileName = pluginState.RegionSite.Url, UseShellExecute = true });
             }
 
             return;
@@ -101,7 +102,7 @@ public class EditProfileWindow : Window, IDisposable
         ImGui.Text("Expanded profile");
 
         ImGui.PushStyleColor(ImGuiCol.Text, Colors.OocInfo);
-        ImGui.TextWrapped("To edit outward appearance and background, use the Chaos Archives website.");
+        ImGui.TextWrapped($"To edit outward appearance and background, use the {siteName} website.");
         ImGui.PopStyleColor();
 
         FieldRow("Age", ref localProfile.age);
@@ -117,9 +118,9 @@ public class EditProfileWindow : Window, IDisposable
 
         ImGuiHelpers.ScaledDummy(3);
 
-        if (ImGui.Button("Open Chaos Archives profile"))
+        if (ImGui.Button($"Open {siteName} profile"))
         {
-            var url = $"https://chaosarchives.org/{player.Server}/{player.Name.Replace(' ', '_')}";
+            var url = $"{pluginState.RegionSite.Url}/{player.Server}/{player.Name.Replace(' ', '_')}";
             Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
         }
 

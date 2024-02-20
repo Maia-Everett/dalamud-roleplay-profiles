@@ -5,6 +5,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
+using Dalamud.Logging;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using RoleplayProfiles.State;
@@ -21,6 +22,7 @@ namespace RoleplayProfiles
         private readonly ITargetManager targetManager;
         private readonly ICondition condition;
         private readonly ICommandManager commandManager;
+        private readonly IClientState clientState;
 
         private readonly PluginState pluginState;
 
@@ -38,6 +40,7 @@ namespace RoleplayProfiles
             [RequiredVersion("1.0")] ICommandManager commandManager,
             [RequiredVersion("1.0")] IChatGui chatGui)
         {
+            this.clientState = clientState;
             this.targetManager = targetManager;
             this.condition = condition;
             this.commandManager = commandManager;
@@ -68,15 +71,39 @@ namespace RoleplayProfiles
 
             pluginInterface.UiBuilder.Draw += DrawUI;
             pluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
+            clientState.Login += DeterminePlayerRegion;
 
+            DeterminePlayerRegion();
             pluginState.RefreshSessionIfNecessary();
         }
 
         public void Dispose()
         {
+            clientState.Login -= DeterminePlayerRegion;
             commandManager.RemoveHandler(CommandHandler.CommandName);
             windowSystem.RemoveAllWindows();
             pluginState.Dispose();
+        }
+
+        private void DeterminePlayerRegion()
+        {
+            var player = clientState.LocalPlayer;
+
+            if (player != null)
+            {
+                byte playerRegion = player.HomeWorld.GameData!.DataCenter.Value!.Region;
+
+                if (playerRegion == 2)
+                {
+                    // North America
+                    pluginState.RegionSite = RegionSite.NA;
+                }
+                else
+                {
+                    // Everywhere else - point to Europe for now
+                    pluginState.RegionSite = RegionSite.EU;
+                }
+            }
         }
 
         private void DrawUI()
@@ -121,7 +148,7 @@ namespace RoleplayProfiles
             windowSystem.Draw();
         }
 
-        public void DrawConfigUI()
+        private void DrawConfigUI()
         {
             configWindow.IsOpen = true;
         }

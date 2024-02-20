@@ -17,6 +17,7 @@ public class ConfigWindow : Window, IDisposable
 {
     public static readonly string Title = "Roleplay Profiles Configuration";
 
+    private readonly PluginState pluginState;
     private readonly Configuration configuration;
     private readonly ApiClient apiClient;
     private readonly EditProfileWindow editProfileWindow;
@@ -38,8 +39,9 @@ public class ConfigWindow : Window, IDisposable
             MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
         };
 
-        this.configuration = pluginState.Configuration;
-        this.apiClient = pluginState.ApiClient;
+        this.pluginState = pluginState;
+        configuration = pluginState.Configuration;
+        apiClient = pluginState.ApiClient;
         userEmail = configuration.UserEmail ?? "";
         enable = configuration.Enable;
         enableInDuties = configuration.EnableInDuties;
@@ -54,26 +56,28 @@ public class ConfigWindow : Window, IDisposable
 
     public override void Draw()
     {
+        string siteName = pluginState.RegionSite.Name;
+
         if (configuration.AccessToken == null)
         {
             if (!configuration.AccessTokenExpired)
             {
-                ImGui.TextWrapped("To edit your character profiles in-game, you need to log in to Chaos Archives.");
+                ImGui.TextWrapped($"To edit your character profiles in-game, you need to log in to {siteName}.");
             }
             else
             {
-                ImGui.TextWrapped("Your Chaos Archives login session has expired. Please log in again.");
+                ImGui.TextWrapped($"Your {siteName} login session has expired. Please log in again.");
             }
 
             ImGui.Spacing();
 
             var labelWidth = ImGuiHelpers.ScaledVector2(160, 0).X;
 
-            ImGui.Text("Chaos Archives email:");
+            ImGui.Text($"{siteName} email:");
             ImGui.SameLine(labelWidth);
             ImGui.InputText("###Email", ref userEmail, 255);
 
-            ImGui.Text("Chaos Archives password:");
+            ImGui.Text($"{siteName} password:");
             ImGui.SameLine(labelWidth);
             ImGui.InputText("###Password", ref userPassword, 255, ImGuiInputTextFlags.Password);
 
@@ -113,7 +117,7 @@ public class ConfigWindow : Window, IDisposable
             ImGui.Separator();
             ImGui.Spacing();
 
-            ImGui.TextWrapped("Not yet registered on Chaos Archives? Sign up now! " +
+            ImGui.TextWrapped($"Not yet registered on {pluginState.RegionSite.Name}? Sign up now! " +
                 "(The button will open the signup page in your web browser.)");
             ImGui.TextWrapped("Currently signups are available for characters on Europe and North America servers.");
 
@@ -124,12 +128,12 @@ public class ConfigWindow : Window, IDisposable
 
             if (ImGui.Button(signUpButtonText))
             {
-                Process.Start(new ProcessStartInfo { FileName = "https://chaosarchives.org/signup", UseShellExecute = true });
+                Process.Start(new ProcessStartInfo { FileName = $"{pluginState.RegionSite.Url}/signup", UseShellExecute = true });
             }
         }
         else
         {
-            ImGui.TextWrapped("You are logged in to Chaos Archives as:");
+            ImGui.TextWrapped($"You are logged in to {pluginState.RegionSite.Name} as:");
             ImGui.TextWrapped(configuration.UserEmail);
 
             if (ImGui.Button("Log out"))
@@ -199,7 +203,7 @@ public class ConfigWindow : Window, IDisposable
             if (e.StatusCode == System.Net.HttpStatusCode.BadRequest && e.Message == "OTP_REQUIRED")
             {
                 showOtp = true;
-                exceptionMessage = "Please enter your one-time password for Chaos Archives";
+                exceptionMessage = $"Please enter your one-time password for {pluginState.RegionSite.Name}";
             }
             else
             {

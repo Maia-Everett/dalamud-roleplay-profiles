@@ -150,7 +150,7 @@ public class TooltipWindow : Window, IDisposable
                 {
                     if (pluginState.Configuration.AccessToken == null)
                     {
-                        if (ImGui.Button("Log in to Chaos Archives"))
+                        if (ImGui.Button($"Log in to {pluginState.RegionSite.Name}"))
                         {
                             configWindow.IsOpen = true;
                         }

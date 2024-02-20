@@ -17,6 +17,7 @@ namespace RoleplayProfiles.State
         public ApiClient ApiClient { get; init; } = new();
         public Configuration Configuration { get; init; }
 
+        public RegionSite RegionSite = RegionSite.EU;
         public Player? TargetPlayer { get; set; } = null;
         public Player? ProfilePlayer { get; set; } = null;
         public bool TargetPlayerSelected { get; set; } = false;
